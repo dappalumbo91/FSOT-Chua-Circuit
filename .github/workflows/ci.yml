@@ -65,9 +65,12 @@ jobs:
   coq:
     name: Coq/Rocq spine
     runs-on: ubuntu-latest
-    container: coqorg/coq:8.20-ocaml-4.14-flambda
     steps:
       - uses: actions/checkout@v4
+      # Do not use job-level `container: coqorg/coq` — that image is non-root
+      # and checkout@v4 cannot write runner save_state (EACCES).
+      - name: Install Coq
+        run: sudo apt-get update && sudo apt-get install -y coq
       - name: coqc
         working-directory: formal/coq
         run: coqc CircuitArray.v
