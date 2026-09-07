@@ -1,0 +1,10 @@
+[package]
+name = "fsot_circuit_kernel"
+version = "0.1.0"
+edition = "2021"
+license = "Apache-2.0"
+description = "Host replay of FSOT-Circuit seed identities (no ESP32)"
+
+[[bin]]
+name = "fsot-circuit-verify"
+path = "src/main.rs"

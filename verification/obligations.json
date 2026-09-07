@@ -1,0 +1,127 @@
+{
+  "pin": "D1D38A185487",
+  "S_EM": 0.5188655207983146,
+  "theta": 0.9174663774653723,
+  "R_c_phi_ohm": 11124.611797498106,
+  "obligation_count": 13,
+  "fail_count": 0,
+  "overall_ok": true,
+  "obligations": [
+    {
+      "id": "pin_prefix",
+      "layer": "A",
+      "ok": true,
+      "detail": "D1D38A185487"
+    },
+    {
+      "id": "zero_free_params",
+      "layer": "A",
+      "ok": true,
+      "detail": 0
+    },
+    {
+      "id": "phi_seed",
+      "layer": "A",
+      "ok": true,
+      "detail": 1.618033988749895
+    },
+    {
+      "id": "sigma_phi",
+      "layer": "A",
+      "ok": true,
+      "detail": 1.618033988749895
+    },
+    {
+      "id": "R_c_formula",
+      "layer": "A",
+      "ok": true,
+      "detail": 11124.611797498106
+    },
+    {
+      "id": "collapse_theta_parity",
+      "layer": "C",
+      "ok": true,
+      "detail": {
+        "python": 0.9174663774653723,
+        "rust": 0.9174663774653723
+      }
+    },
+    {
+      "id": "phi_rust_parity",
+      "layer": "C",
+      "ok": true,
+      "detail": {
+        "python": 1.618033988749895,
+        "rust": 1.6180339887
+      }
+    },
+    {
+      "id": "sim_overall_ok",
+      "layer": "B",
+      "ok": true,
+      "detail": {
+        "pin_D1D38A": true,
+        "audio_band": true,
+        "chaos_ok": true,
+        "open_unlocked": true,
+        "below_phi_unlocked": true,
+        "phi_locked": true,
+        "phi_sq_locked": true,
+        "bom_catalog_green": true,
+        "adc_in_rail": true,
+        "free_parameters": 0,
+        "overall_ok": true
+      }
+    },
+    {
+      "id": "phi_locked",
+      "layer": "B",
+      "ok": true,
+      "detail": {
+        "open": {
+          "sigma": 0.0,
+          "lock_rate": 0.0
+        },
+        "below_phi": {
+          "sigma": 1.0,
+          "lock_rate": 0.0,
+          "R_c_ohm": 18000.0
+        },
+        "phi": {
+          "sigma": 1.618033988749895,
+          "lock_rate": 1.0,
+          "R_c_ohm": 11124.611797498106
+        },
+        "phi_sq": {
+          "sigma": 2.618033988749895,
+          "lock_rate": 1.0,
+          "R_c_ohm": 6875.388202501893
+        }
+      }
+    },
+    {
+      "id": "open_unlocked",
+      "layer": "B",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "id": "bom_catalog_green",
+      "layer": "B",
+      "ok": true,
+      "detail": 0.02075462083193127
+    },
+    {
+      "id": "smt_file",
+      "layer": "D",
+      "ok": true,
+      "detail": "verification/circuit_bounds.smt2"
+    },
+    {
+      "id": "lean_priors",
+      "layer": "D",
+      "ok": true,
+      "detail": "FSOTCircuit/ArrayPriors.lean"
+    }
+  ]
+}

@@ -1,0 +1,83 @@
+{
+  "phi": 1.618033988749895,
+  "pred_R_c_ohm": 11124.611797498106,
+  "formula": "\u03c3_c = \u03c6,  R_c = \u03b1 R / \u03c6  (3 identical nodes on a ring, BOM NIC)",
+  "amp_ref": 1.7772232733874012,
+  "lock_at_phi_by_seed": [
+    {
+      "locked": true,
+      "finite": true,
+      "amp": 1.165483073194317,
+      "mad": 0.15791051228706385,
+      "mad_cut": 0.1602521225915984,
+      "trit": 0.957,
+      "trit_cut": 0.6180339887498948,
+      "order": 0.984827215735978,
+      "railed_frac": 0.0,
+      "seed": 1
+    },
+    {
+      "locked": true,
+      "finite": true,
+      "amp": 1.776977346604384,
+      "mad": 0.04308940319259993,
+      "mad_cut": 0.1602521225915984,
+      "trit": 0.9943333333333333,
+      "trit_cut": 0.6180339887498948,
+      "order": 0.9995454459013641,
+      "railed_frac": 0.0,
+      "seed": 2
+    },
+    {
+      "locked": true,
+      "finite": true,
+      "amp": 1.815328583035189,
+      "mad": 0.023531235396466718,
+      "mad_cut": 0.1602521225915984,
+      "trit": 0.9873333333333333,
+      "trit_cut": 0.6180339887498948,
+      "order": 0.9998403284680838,
+      "railed_frac": 0.0,
+      "seed": 3
+    },
+    {
+      "locked": false,
+      "finite": true,
+      "amp": 1.5835597317706895,
+      "mad": 0.17302239945789347,
+      "mad_cut": 0.1602521225915984,
+      "trit": 0.918,
+      "trit_cut": 0.6180339887498948,
+      "order": 0.9857194989917374,
+      "railed_frac": 0.0,
+      "seed": 5
+    },
+    {
+      "locked": true,
+      "finite": true,
+      "amp": 1.7730450881123858,
+      "mad": 0.09886071569440646,
+      "mad_cut": 0.1602521225915984,
+      "trit": 0.9706666666666667,
+      "trit_cut": 0.6180339887498948,
+      "order": 0.9973886417741183,
+      "railed_frac": 0.0,
+      "seed": 8
+    }
+  ],
+  "phi_lock_rate": 0.8,
+  "onset_sigma_by_seed": [
+    1.6564453124999998,
+    1.58125,
+    1.491015625,
+    1.523828125,
+    1.5224609375
+  ],
+  "onset_sigma_mean": 1.5550000000000002,
+  "onset_sigma_std": 0.05848878619318027,
+  "onset_R_c_mean": 11575.562700964629,
+  "error_pct_R_c": 3.8957147493913475,
+  "error_pct_sigma": 4.053632717035032,
+  "green_half_pct": false,
+  "aspiration_0_05": false
+}

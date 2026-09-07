@@ -1,0 +1,8 @@
+FSOT-Chua-Circuit
+(Coupled Chua circuit / nonlinear RLC oscillator array)
+Copyright 2026 Damian Arthur Palumbo
+
+Licensed under the Apache License, Version 2.0.
+The scalar pin in vendor/fsot_compute.py is the D1D38A certificate
+shared with FSOT-2.1-Lean. Application obligations in this tree are
+independent and must be re-run here.

@@ -1,0 +1,10 @@
+{
+  "application": "FSOT-Circuit",
+  "certificate_authority": "D1D38A185487B452E470AC68ECE2EB45AEB1CA9CE25FC9BF9564C19633FFBE70",
+  "authority_sha256": "D1D38A185487B452E470AC68ECE2EB45AEB1CA9CE25FC9BF9564C19633FFBE70",
+  "pin_prefix": "D1D38A",
+  "bytes": 59945,
+  "source_hub": "https://github.com/dappalumbo91/FSOT-2.1-Lean",
+  "note": "This application vendors the pin and re-proves its own obligations. Hub green gates are not inherited.",
+  "gitattributes": "vendor/fsot_compute.py -text"
+}

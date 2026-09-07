@@ -1,0 +1,58 @@
+{
+  "project": "FSOT 3-node nonlinear RLC array",
+  "pin": "D1D38A",
+  "domain": "Electromagnetism",
+  "D_eff": 9,
+  "policy": "seed-derived E-series from PDF audio-band envelope + industry catalog IDs. No fitted R/L/C.",
+  "node": {
+    "topology": "Kennedy Chua (R, L, C1, C2, dual-op-amp NR)",
+    "R_ohm": 1800,
+    "L_h": 0.022,
+    "C1_f": 1e-8,
+    "C2_f": 1e-7,
+    "alpha": 10.0,
+    "beta_formula": "R^2 C2 / L",
+    "Bp_v": 1.0,
+    "f_lc_hz_formula": "1/(2 pi sqrt(L C2))"
+  },
+  "nic_per_node": {
+    "R1_ohm": 220,
+    "R2_ohm": 220,
+    "R3_ohm": 2200,
+    "R4_ohm": 22000,
+    "R5_ohm": 22000,
+    "R6_ohm": 3300,
+    "note": "PDF envelope 220 ohm to 20 kOhm. Kennedy dual-op-amp negative-resistance network."
+  },
+  "coupling": {
+    "type": "3-node ring / triangle (identical degree 2)",
+    "pot_ohm": 20000,
+    "set_ohm": 11124.61,
+    "formula": "R_c = alpha * R / phi",
+    "nodes": 3,
+    "sigma_formula": "alpha * R / R_c"
+  },
+  "esp32_front_end": {
+    "mcu": "MCU_ESP32_WROOM32",
+    "adc_bits": 12,
+    "vdd_v": 3.3,
+    "gpio": {"node0": 34, "node1": 35, "node2": 32},
+    "divider_r_ohm": 100000,
+    "map": "v_adc = 1.65 + 0.5 * V_C1",
+    "safe_vc1_v": [-2.0, 2.0],
+    "clamp": "D_1N4148 to 3V3 and GND"
+  },
+  "catalog_ids": [
+    "R_1k_1pct",
+    "R_10k_1pct",
+    "R_100k_1pct",
+    "C_10nF_X7R",
+    "C_100nF_X7R",
+    "U_LM358",
+    "D_1N4148",
+    "MCU_ESP32_WROOM32",
+    "PS_LDO_3V3",
+    "C_100nF_bypass_ESP",
+    "C_100uF_bulk_ESP"
+  ]
+}

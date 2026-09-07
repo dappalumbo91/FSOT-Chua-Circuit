@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>FSOT Chua ring — build tutorial</title>
+<style>
+  :root { --ink:#111; --muted:#444; --line:#222; --bg:#f7f4ee; --card:#fff; --ok:#0a7a32; --bad:#a31b1b; }
+  * { box-sizing: border-box; }
+  body { margin: 0 auto; max-width: 920px; padding: 32px 20px 80px; font: 17px/1.5 "Segoe UI", system-ui, sans-serif; color: var(--ink); background: var(--bg); }
+  h1,h2,h3 { line-height: 1.2; }
+  h1 { font-size: 2rem; }
+  img.photo { width: 100%; border: 1px solid #ddd; background: #fff; }
+  figcaption { font-size: 0.9rem; color: var(--muted); margin: 6px 0 22px; }
+  table { width: 100%; border-collapse: collapse; background: var(--card); margin: 12px 0 24px; }
+  th, td { border: 1px solid #ccc; padding: 8px 10px; text-align: left; vertical-align: top; }
+  th { background: #efe8d8; }
+  code, pre { font-family: Consolas, "Courier New", monospace; }
+  pre { background: #1e1e1e; color: #eee; padding: 12px 14px; overflow-x: auto; }
+  .ok { color: var(--ok); font-weight: 700; }
+  .bad { color: var(--bad); font-weight: 700; }
+  .card { background: var(--card); border: 1px solid #ddd; padding: 14px 16px; margin: 16px 0; }
+  svg.diagram { width: 100%; height: auto; background: var(--card); border: 1px solid #ddd; }
+</style>
+</head>
+<body>
+<h1>FSOT 3-node Chua ring</h1>
+<p>Afternoon breadboard. Three identical analog oscillators in a <strong>triangle</strong>. Coupling pots at <strong>11.12 kΩ</strong> must lock. At 20 kΩ they must not. Pin D1D38A. Zero free parameters.</p>
+
+<figure>
+  <img class="photo" src="images/bench_triangle_overview.jpg" alt="Breadboard with three analog islands and an ESP32"/>
+  <figcaption>Layout idea: analog islands in a loop, ESP32 as logger, 9 V batteries off the digital island. The photo is a mood board (extra trimmers). Your BOM uses three coupling pots.</figcaption>
+</figure>
+
+<h2>1. Why this is the experiment</h2>
+<p>FSOT trits are (−1, 0, +1). A Chua node’s voltage already occupies three regions around ±1 V. The ESP32 12-bit ADC is the observer. The prediction is not a fitted onset: it is the golden-ratio operating point of three identical nodes on a closed loop.</p>
+<div class="card">
+  σ = φ &nbsp;&nbsp;→&nbsp;&nbsp; R<sub>c</sub> = α R / φ = 10 × 1800 / φ = <strong>11124.61 Ω</strong>
+</div>
+<p>Set all three pots there with a DMM. That is the lock test.</p>
+
+<h2>2. The 3% was a wrong object</h2>
+<table>
+  <tr><th>Wrong (3% residual)</th><th>Right (overall_ok)</th></tr>
+  <tr><td>1-D chain (ends ≠ middle)</td><td>Ring / triangle, degree 2 each</td></tr>
+  <tr><td>Matsumoto fitted a, b = −1.143, −0.714</td><td>Ga, Gb from 2.2 kΩ ∥ 3.3 kΩ on the BOM</td></tr>
+  <tr><td>Lock cut 0.85 (invented)</td><td>trit ≥ φ⁻¹, MAD/amp ≤ φ⁻⁴</td></tr>
+  <tr><td>σ = α/φ picked after the sweep</td><td>σ = φ named first</td></tr>
+</table>
+<p>Gates after the fix: open 0% lock, σ=1 0% lock, σ=φ 100% lock, σ=φ² 100% lock. BOM catalog residual at Electromagnetism: <span class="ok">0.0208%</span>.</p>
+
+<h2>3. Parts you actually buy</h2>
+<p>Full function list: <a href="../hardware/BOM.md">hardware/BOM.md</a>.</p>
+<table>
+  <tr><th>Qty</th><th>Part</th><th>Used for</th></tr>
+  <tr><td>1</td><td>ESP32-WROOM-32 DevKit V1 (CP2102)</td><td>12-bit ADC logger, GPIO 2 LED</td></tr>
+  <tr><td>3</td><td>TL082 / TL072 DIP-8</td><td>Negative resistor. Needs ±9 V, not 3.3 V</td></tr>
+  <tr><td>3</td><td>22 mH inductor</td><td>Chua L, audio band ~3.4 kHz</td></tr>
+  <tr><td>3</td><td>10 nF 50 V</td><td>C1. α = C2/C1 = 10</td></tr>
+  <tr><td>3</td><td>100 nF 50 V</td><td>C2</td></tr>
+  <tr><td>3</td><td>1.80 kΩ 1%</td><td>Linear R</td></tr>
+  <tr><td>6</td><td>220 Ω</td><td>NIC R1, R2 (two per node)</td></tr>
+  <tr><td>3</td><td>2.2 kΩ</td><td>NIC inner branch (Ga)</td></tr>
+  <tr><td>3</td><td>3.3 kΩ</td><td>NIC outer branch (Gb)</td></tr>
+  <tr><td>6</td><td>22 kΩ</td><td>NIC R4, R5</td></tr>
+  <tr><td>6</td><td>100 kΩ 1%</td><td>1.65 V bias into the ESP32</td></tr>
+  <tr><td>6</td><td>1N4148</td><td>Clamp GPIO to 3V3 and GND</td></tr>
+  <tr><td>3</td><td>20 kΩ linear pot</td><td>Triangle coupling. DMM-set to 11.12 kΩ</td></tr>
+  <tr><td>2</td><td>9 V battery</td><td>Analog rails only</td></tr>
+</table>
+
+<figure>
+  <img class="photo" src="images/chua_node_macro.jpg" alt="Macro of one analog oscillator island"/>
+  <figcaption>One node: DIP op-amp, inductor, capacitors, resistor cluster, 100 kΩ pair toward the ADC jumper.</figcaption>
+</figure>
+
+<h2>4. ESP32 placement (DOIT DevKit V1, USB up)</h2>
+<figure>
+  <img class="photo" src="images/esp32_devkit_adc_wires.jpg" alt="ESP32 with analog jumper wires"/>
+  <figcaption>USB at the top. Analog wires on the input-only ADC header. Ground is the black lead.</figcaption>
+</figure>
+<svg class="diagram" viewBox="0 0 640 280" xmlns="http://www.w3.org/2000/svg">
+  <rect x="40" y="20" width="560" height="240" rx="8" fill="#1b1b1b"/>
+  <text x="320" y="48" fill="#eee" text-anchor="middle" font-size="16">ESP32 DevKit V1 — left header (ADC)</text>
+  <rect x="70" y="70" width="500" height="36" fill="#2e2e2e"/>
+  <text x="90" y="94" fill="#9cf" font-size="14">EN  VP36  VN39  [34]  [35]  [32]  33  25  26  27  14  12  13  GND  VIN</text>
+  <text x="210" y="140" fill="#fc6" font-size="15">GPIO 34 ← Node A VC1 (biased)  ADC1_CH6  input only</text>
+  <text x="210" y="168" fill="#fc6" font-size="15">GPIO 35 ← Node B VC1 (biased)  ADC1_CH7  input only</text>
+  <text x="210" y="196" fill="#fc6" font-size="15">GPIO 32 ← Node C VC1 (biased)  ADC1_CH4</text>
+  <text x="210" y="224" fill="#8d8" font-size="15">GND ← star ground (one jumper to analog GND)</text>
+  <text x="210" y="248" fill="#ccc" font-size="13">GPIO 2 = onboard LED. Do not jumper it. Never put ±9 V on this header.</text>
+</svg>
+
+<h2>5. Triangle and bias</h2>
+<svg class="diagram" viewBox="0 0 640 300" xmlns="http://www.w3.org/2000/svg">
+  <polygon points="320,40 520,250 120,250" fill="none" stroke="#222" stroke-width="3"/>
+  <circle cx="320" cy="40" r="28" fill="#efe8d8" stroke="#222"/>
+  <circle cx="520" cy="250" r="28" fill="#efe8d8" stroke="#222"/>
+  <circle cx="120" cy="250" r="28" fill="#efe8d8" stroke="#222"/>
+  <text x="320" y="45" text-anchor="middle" font-size="14">A</text>
+  <text x="520" y="255" text-anchor="middle" font-size="14">B</text>
+  <text x="120" y="255" text-anchor="middle" font-size="14">C</text>
+  <text x="430" y="130" font-size="13">Rc AB 11.12 kΩ</text>
+  <text x="280" y="270" font-size="13">Rc BC 11.12 kΩ</text>
+  <text x="150" y="130" font-size="13">Rc CA 11.12 kΩ</text>
+  <text x="320" y="160" text-anchor="middle" font-size="14">identical nodes, degree 2</text>
+</svg>
+<p>Bias per node (the only ESP32 interface):</p>
+<pre>VC1 -- 100k --+-- GPIO 34/35/32
+              +-- 100k to GND
+              +-- 100k to 3V3
+              + 1N4148 to 3V3 and to GND</pre>
+<p>v<sub>ADC</sub> = 1.65 + 0.5 × V<sub>C1</sub>. A ±2 V swing stays in 0.65–2.65 V.</p>
+
+<h2>6. Build order</h2>
+<ol>
+  <li>Seat three TL082s. Wire ±9 V rails. Do not connect batteries yet.</li>
+  <li>Build three identical tanks (R, L, C1, C2, NIC). They must be copies.</li>
+  <li>Triangle the three pots on the three VC1 nets.</li>
+  <li>Bias networks. USB-power the ESP32. DMM each ADC node ≈ 1.65 V.</li>
+  <li>Flash firmware. Confirm <code>FSOT_RLC_HARDWARE_BOOT=ok</code>.</li>
+  <li>Then connect 9 V. If the DevKit resets, a clamp is missing — disconnect.</li>
+  <li>DMM pots to 11.12 kΩ. Watch UART.</li>
+</ol>
+
+<h2>7. The two tests</h2>
+<table>
+  <tr><th>Test</th><th>Pots</th><th>Must see</th></tr>
+  <tr><td>Unlocked</td><td>20 kΩ (σ ≈ 0.9 &lt; φ)</td><td class="bad">FSOT_RLC_LOCK=0, trits mix</td></tr>
+  <tr><td>Locked</td><td><strong>11.12 kΩ</strong> (σ = φ)</td><td class="ok">FSOT_RLC_LOCK=1, three trits equal</td></tr>
+</table>
+<p>You do not tune a pot until a residual vanishes. The prediction is the 11.12 kΩ setting.</p>
+
+<h2>8. Cross-verify</h2>
+<pre>python -m sim.run_sim
+python verification\verify_circuit.py
+z3 verification\circuit_bounds.smt2</pre>
+<p>Lean integers: <code>formal/CircuitArrayPriors.lean</code>. Same obligation shape as FSOT-2.1-Lean. Absorb later as an Electromagnetism / circuit panel in the hub.</p>
+</body>
+</html>

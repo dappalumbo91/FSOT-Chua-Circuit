@@ -1,0 +1,88 @@
+name: FSOT-Circuit CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  python-and-smt:
+    name: Pin + algebra + ODE + SMT
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install Python deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      - name: Algebra + pin
+        run: python tests/test_algebra.py
+      - name: SMT python bounds
+        run: python verification/smt_replay.py
+      - name: Host observer twin
+        run: python firmware/host_observer.py
+      - name: Chua ring gates
+        run: python -m sim.run_sim
+      - name: Obligation checker
+        run: python verification/verify_circuit.py
+      - name: Z3
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y z3
+          z3 verification/circuit_bounds.smt2 | tee /tmp/z3.out
+          grep -q '^sat' /tmp/z3.out
+
+  lean:
+    name: Lean 4 application priors
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: elan
+        run: |
+          curl https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -sSf | sh -s -- -y --default-toolchain none
+          echo "$HOME/.elan/bin" >> $GITHUB_PATH
+      - name: lake build
+        run: lake build
+
+  rust:
+    name: Rust host kernel
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - name: cargo run
+        working-directory: verification/rust_circuit_kernel
+        run: cargo run --release | tee /tmp/rust.out
+      - name: require marker
+        run: grep -q FSOT_CIRCUIT_RUST_OK /tmp/rust.out
+
+  coq:
+    name: Coq/Rocq spine
+    runs-on: ubuntu-latest
+    container: coqorg/coq:8.20-ocaml-4.14-flambda
+    steps:
+      - uses: actions/checkout@v4
+      - name: coqc
+        working-directory: formal/coq
+        run: coqc CircuitArray.v
+
+  tla:
+    name: TLA+ TLC
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+      - name: TLC
+        working-directory: formal/tla
+        run: |
+          java -cp ../../tools/tla/tla2tools.jar tlc2.TLC -config CircuitArray.cfg CircuitArray.tla | tee /tmp/tlc.out
+          grep -q "No error has been found" /tmp/tlc.out

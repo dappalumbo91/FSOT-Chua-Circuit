@@ -1,0 +1,29 @@
+edition_id: fsot-circuit-v0.1
+application: FSOT-Circuit
+author: Damian Arthur Palumbo
+license: Apache-2.0
+pin_prefix: D1D38A
+pin_sha256: D1D38A185487B452E470AC68ECE2EB45AEB1CA9CE25FC9BF9564C19633FFBE70
+hub_source: https://github.com/dappalumbo91/FSOT-2.1-Lean
+inherits_hub_overall_ok: false
+free_parameters: 0
+domain: Electromagnetism
+D_eff: 9
+operating_point:
+  formula: "sigma = phi; R_c = alpha * R / phi"
+  sigma: 1.618033988749895
+  R_c_ohm: 11124.611797498106
+  topology: ring
+nic:
+  Ga: -1/1320
+  Gb: -1/3300
+  a: -15/11
+  b: -6/11
+gates:
+  open_lock_rate: 0.0
+  below_phi_lock_rate: 0.0
+  phi_lock_rate: 1.0
+  phi_sq_lock_rate: 1.0
+  bom_median_error_pct: 0.0208
+  green_gate_pct: 0.5
+reproduction: python verification/run_cross_proof.py

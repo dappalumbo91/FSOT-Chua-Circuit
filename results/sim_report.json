@@ -1,0 +1,123 @@
+{
+  "project": "FSOT nonlinear RLC oscillator array",
+  "wrong_object_that_made_3pct": [
+    "1-D chain (non-identical degree)",
+    "Matsumoto fitted Chua slopes",
+    "arbitrary 0.85 lock cut",
+    "\u03c3_c = \u03b1/\u03c6 selected after the sweep"
+  ],
+  "right_object": {
+    "topology": "3-node ring",
+    "slopes": "Kennedy NIC Ga,Gb from 2.2k||3.3k",
+    "lock_cut": "MAD/amp \u2264 \u03c6^{-4} and trit \u2265 \u03c6^{-1}",
+    "operating_point": "\u03c3 = \u03c6"
+  },
+  "pin": "D1D38A",
+  "sha256_prefix": "D1D38A185487",
+  "domain": "Electromagnetism",
+  "D_eff": 9,
+  "S_electromagnetism": 0.5188655207983146,
+  "physical": {
+    "R_ohm": 1800.0,
+    "L_h": 0.022,
+    "C1_f": 1e-08,
+    "C2_f": 1e-07,
+    "Ga_S": -0.0007575757575757576,
+    "Gb_S": -0.00030303030303030303,
+    "a_dimless": -1.3636363636363635,
+    "b_dimless": -0.5454545454545454,
+    "alpha": 10.0,
+    "beta": 14.727272727272728,
+    "f_lc_hz": 3393.19478787285,
+    "R_c_phi_ohm": 11124.611797498106,
+    "audio_band_ok": true
+  },
+  "prediction": {
+    "name": "sigma_equals_phi",
+    "formula": "\u03c3 = \u03c6,  R_c = \u03b1 R / \u03c6",
+    "sigma": 1.618033988749895,
+    "R_c_ohm": 11124.611797498106,
+    "why": "Three identical fluid nodes on a closed loop. \u03c6 is the Layer-0 self-similar fold. \u03b1 = C2/C1 is the catalog capacitor ratio, not a fit."
+  },
+  "gates": {
+    "pin_D1D38A": true,
+    "audio_band": true,
+    "chaos_ok": true,
+    "open_unlocked": true,
+    "below_phi_unlocked": true,
+    "phi_locked": true,
+    "phi_sq_locked": true,
+    "bom_catalog_green": true,
+    "adc_in_rail": true,
+    "free_parameters": 0,
+    "overall_ok": true
+  },
+  "lock": {
+    "open": {
+      "sigma": 0.0,
+      "lock_rate": 0.0
+    },
+    "below_phi": {
+      "sigma": 1.0,
+      "lock_rate": 0.0,
+      "R_c_ohm": 18000.0
+    },
+    "phi": {
+      "sigma": 1.618033988749895,
+      "lock_rate": 1.0,
+      "R_c_ohm": 11124.611797498106
+    },
+    "phi_sq": {
+      "sigma": 2.618033988749895,
+      "lock_rate": 1.0,
+      "R_c_ohm": 6875.388202501893
+    }
+  },
+  "bom_catalog": {
+    "R_ohm": {
+      "measured": 1800.0,
+      "computed": 1800.3735831749748,
+      "error_pct": 0.020754620831932396
+    },
+    "L_h": {
+      "measured": 0.022,
+      "computed": 0.022004566016583023,
+      "error_pct": 0.020754620831927886
+    },
+    "C1_f": {
+      "measured": 1e-08,
+      "computed": 1.0002075462083194e-08,
+      "error_pct": 0.020754620831936757
+    },
+    "C2_f": {
+      "measured": 1e-07,
+      "computed": 1.0002075462083193e-07,
+      "error_pct": 0.02075462083193014
+    },
+    "R_c_phi_ohm": {
+      "measured": 11124.611797498106,
+      "computed": 11126.9206684957,
+      "error_pct": 0.020754620831927154
+    },
+    "vdd_3v3": {
+      "measured": 3.3,
+      "computed": 3.3006849024874536,
+      "error_pct": 0.020754620831932934
+    }
+  },
+  "bom_median_error_pct": 0.02075462083193127,
+  "adc": {
+    "sigma": 1.618033988749895,
+    "n_samples": 6250,
+    "code_min": 176,
+    "code_max": 3826,
+    "adc_in_rail": true,
+    "quant_mae_v": 0.0004021491271794513,
+    "last_trits": [
+      -1,
+      -1,
+      -1
+    ]
+  },
+  "amp_ref": 1.7772232733874012
+}
