@@ -156,7 +156,11 @@ def main() -> int:
     # Isabelle — optional until present
     isabelle = shutil.which("isabelle")
     if isabelle:
-        rc, out = run([isabelle, "process", "-T", "CircuitArray"], cwd=ROOT / "formal" / "isabelle", timeout=180)
+        thy_dir = ROOT / "formal" / "isabelle"
+        # Isabelle2022+ removed `isabelle process -T`; `process_theories` is the current CLI.
+        rc, out = run([isabelle, "process_theories", "-l", "HOL", "-D", ".", "-O", "CircuitArray"], cwd=thy_dir, timeout=180)
+        if rc != 0 and "Unknown Isabelle tool" in out:
+            rc, out = run([isabelle, "process", "-T", "CircuitArray"], cwd=thy_dir, timeout=180)
         record("isabelle", False, rc, out)
     else:
         record("isabelle", False, 127, "isabelle not on PATH (optional until installed)")
