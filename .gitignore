@@ -21,3 +21,10 @@ formal/tla/*.out
 .vscode/
 *.pdb
 cpp/build/
+
+# generated / scratch
+error_budget/build/
+spice/models/vendor/
+spice/out/*.dat
+spice/out/tmp*.cir
+spice/netlists/ring_*_seed*.cir

@@ -1,0 +1,5 @@
+models/vendor/
+out/*.dat
+out/*.cir
+out/cal.cir
+__pycache__/

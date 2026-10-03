@@ -1,0 +1,21 @@
+* Kennedy two-op-amp Chua node, values exactly per FSOT-Chua-Circuit BOM (netlist.json).
+* Ports: v1 (V_C1 net), v2 (V_C2 net), vcc, vee.  Op-amp subckt chosen by param-free name OPA (see .include order).
+* k = time-scale factor (C1, C2, L multiplied by k; all FSOT dimensionless numbers unchanged).
+* r0 = inductor series resistance (ohm), gamma = beta*r0/R.
+.subckt CHUA_NODE v1 v2 vcc vee params: k=1 r0=0
+R   v1 v2 1.8k
+C1  v1 0 {10n*k}
+C2  v2 0 {100n*k}
+L1  v2 nl {22m*k}
+Rr0 nl 0 {max(r0,1u)}
+* outer NIC branch (U1 = TL082 half A: pin3 +, pin2 -, pin1 out)
+XU1 v1 n1m vcc vee o1 OPA
+R1  v1  o1  220
+R2  o1  n1m 220
+R3  n1m 0   2.2k
+* inner NIC branch (U2 = TL082 half B: pin5 +, pin6 -, pin7 out)
+XU2 v1 n2m vcc vee o2 OPA
+R4  v1  o2  22k
+R5  o2  n2m 22k
+R6  n2m 0   3.3k
+.ends CHUA_NODE

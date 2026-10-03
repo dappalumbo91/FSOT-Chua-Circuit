@@ -104,3 +104,8 @@ jobs:
         run: cmake --build cpp/build
       - name: ctest
         run: ctest --test-dir cpp/build --output-on-failure
+      - name: Build error-budget tools (eb, mc) and smoke-run the standard-model MSF
+        run: |
+          cmake -S error_budget -B error_budget/build -G Ninja -DCMAKE_BUILD_TYPE=Release
+          cmake --build error_budget/build
+          ./error_budget/build/mc point r=18.4400497592861384 T=3000

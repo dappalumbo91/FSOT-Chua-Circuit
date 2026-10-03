@@ -1,0 +1,20 @@
+{
+ "single_node": {
+  "nets_match": true,
+  "n_nets": 9,
+  "n_items": 19,
+  "holes_used": 44,
+  "diff": null,
+  "steps": 19
+ },
+ "ring_phi2": {
+  "nets_match": true,
+  "n_nets": 24,
+  "n_items": 66,
+  "holes_used": 150,
+  "diff": null,
+  "steps": 66
+ },
+ "mutation_test_detected": "yes (hole reused: ('S', 19, 'top', 'g'))",
+ "mutation2_detected": true
+}

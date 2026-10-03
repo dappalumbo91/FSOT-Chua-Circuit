@@ -1,0 +1,27 @@
+* FSOT Kennedy-Chua 3-node ring; op-amp=tl082; time scale k=10 (tau = 1800 us)
+* Parameters: k (C1,C2,L x k), r0 = inductor series resistance [ohm], Rc = coupling [ohm] (ring only).
+* sigma = alpha*R/Rc = 18000/Rc:  20k->0.9, 18k->1, 11124.61->phi, 6875.39->phi^2.
+.param k=10 r0=0 Rc=6875.390
+.include ../models/chua_node.lib
+.include ../models/vendor/ti_sloj070/TL082.301
+.subckt OPA inp inn vcc vee out
+X inp inn vcc vee out TL082
+.ends OPA
+Vcc vcc 0 9.1899
+Vee vee 0 -9.1899
+Xa a1 a2 vcc vee CHUA_NODE k={k} r0={r0}
+Xb b1 b2 vcc vee CHUA_NODE k={k} r0={r0}
+Xc c1 c2 vcc vee CHUA_NODE k={k} r0={r0}
+Rcab a1 b1 {Rc}
+Rcbc b1 c1 {Rc}
+Rcca c1 a1 {Rc}
+.ic v(a1)=0.1 v(a2)=0 v(b1)=0.15 v(b2)=0 v(c1)=0.2 v(c2)=0
+.options method=gear reltol=1e-4 abstol=1e-10 vntol=1e-7 itl4=100
+.tran 1.8e-05 3.6 0 3.6e-06 uic
+.control
+run
+plot v(a1) v(b1) v(c1) xlimit 3.24 3.6
+meas tran vmax MAX v(a1) from=2.16
+meas tran vmin MIN v(a1) from=2.16
+.endc
+.end
