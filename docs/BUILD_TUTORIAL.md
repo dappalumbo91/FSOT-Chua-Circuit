@@ -2,7 +2,7 @@
 
 This is the afternoon experiment. You are not tuning a neural net. You are building three identical analog oscillators, tying them in a **triangle**, and checking two pot settings against the golden ratio.
 
-Pin **D1D38A**. Zero free parameters. If it fails, you used the wrong object — you do not add a coefficient.
+Pin **AEB2AD**. Zero free parameters. If it fails, you used the wrong object — you do not add a coefficient.
 
 ![Bench overview](images/bench_triangle_overview.jpg)
 
@@ -20,13 +20,14 @@ FSOT trits are \((-1,0,+1)\). A Chua oscillator’s voltage already lives in thr
 | \(\lvert V\rvert\le 1\,\mathrm{V}\) | \(0\) | quiescent / inner |
 | \(> +1\,\mathrm{V}\) | \(+1\) | excitation / emergence |
 
-The ESP32 12-bit ADC is the observer. Coupling is the T³ / \(\kappa\) interaction: when three **identical** nodes share a closed loop, they lock at the Layer-0 fold \(\varphi\).
+The ESP32 12-bit ADC is the observer. Coupling is the T³ / \(\kappa\) interaction: when three **identical** nodes share a closed loop, they lock above a threshold \(\sigma_c\) that FSOT predicts with zero free parameters (pin AEB2AD, Branch L inductor loss, see `docs/BRANCH_L_DERIVATION.md`):
 
 \[
-\sigma=\varphi,\qquad R_c=\frac{\alpha R}{\varphi}=\frac{10\times 1800}{\varphi}=11124.61\,\Omega
+\sigma_c=1.4897\;\Rightarrow\;R_c^{\ast}=\frac{\alpha R}{\sigma_c}=12.08\,\mathrm{k}\Omega,\qquad
+\sigma=\varphi^2\;\Rightarrow\;R_c=\frac{10\times 1800}{\varphi^2}=6875.39\,\Omega\ (\text{robust lock})
 \]
 
-Set the three pots there. That is the prediction.
+The threshold is the sharp prediction; \(\varphi^2\) is the robust gate. (\(\varphi\), 11.12 kΩ, also locks, but only because \(\sigma_c<\varphi\).) Measure the inductor's Q at 3.4 kHz first: Branch L predicts **25.44**.
 
 ---
 
@@ -44,11 +45,12 @@ That is the opposite of the theory. The remedy:
 | Must be | Is |
 |---------|----|
 | Identical nodes | **Ring / triangle**, degree 2 each |
-| Slopes from parts | Kennedy NIC **2.2 kΩ ∥ 3.3 kΩ** → \(G_a,G_b\) |
+| Slopes from parts | Kennedy NIC resistors → \(G_a=-1/1320\), \(G_b=-9/22000\), \(G_c=101/22000\) S |
 | Seed-closed lock | trit \(\ge\varphi^{-1}\), MAD/amp \(\le\varphi^{-4}\) |
-| Operating point named first | \(\sigma=\varphi\) |
+| Prediction named first | \(\sigma_c=1.4897\) (locked, sha256 `04ebe3f4…`/`d6bd17be…`), robust gate \(\sigma=\varphi^2\) |
+| Honest integration | 2000 τ, no clip, lock requires no escape beyond \(B_{p2}\) |
 
-After that, 6/6 random initial conditions lock at \(\varphi\) and none lock at \(\sigma=1\). BOM catalog residual at Electromagnetism is **0.0208%**.
+After that (2000 τ, 6 random initial conditions): 6/6 lock at \(\varphi^2\) and at \(\varphi\), 0/6 at \(\sigma=1\) and at 20 kΩ (escaped), and the sweep threshold is 1.525 against the predicted 1.4897. BOM catalog residual at Electromagnetism is **0.0382%** (AEB2AD).
 
 ---
 
@@ -62,13 +64,13 @@ Full buy list with function: [`../hardware/BOM.md`](../hardware/BOM.md).
 - 3 × 22 mH, 10 nF, 100 nF, 1.80 kΩ
 - NIC resistors per node: 2×220 Ω, 2.2 kΩ, 2×22 kΩ, 3.3 kΩ
 - 3 × 20 kΩ pots (the triangle)
-- 6 × 100 kΩ + 6 × 1N4148 (ESP32 safety)
+- per node 300 kΩ + 100 kΩ + 150 kΩ (ADC bias, \(v=1.65+V_{C1}/6\)) + 2 × 1N4148 (ESP32 safety)
 - 1 × ESP32-WROOM-32 DevKit V1
 - 2 × 9 V batteries (analog only)
 
 ![One analog node](images/chua_node_macro.jpg)
 
-*One island: op-amp, inductor, capacitors, resistor cluster, two 100 kΩ resistors toward the ADC jumper.*
+*One island: op-amp, inductor, capacitors, resistor cluster, bias resistors toward the ADC jumper (photo shows the old 100 k/100 k network; use 300 k / 100 k / 150 k).*
 
 ---
 
@@ -105,7 +107,7 @@ GPIO 34 and 35 **cannot** be outputs. They have no internal pull-ups. That is wh
 ### Triangle coupling
 
 ```
-A ---- pot AB (11.12 kΩ) ---- B
+A ---- pot AB (6.88 kΩ / 20 kΩ / sweep) ---- B
  \                           /
   \                         /
    pot CA                 pot BC
@@ -114,21 +116,21 @@ A ---- pot AB (11.12 kΩ) ---- B
       -------- C --------
 ```
 
-Each pot sits between two `VC1` nodes, **before** the 100 kΩ bias network.
+Each pot sits between two `VC1` nodes, **before** the bias network.
 
 ### Bias (per node, the only ESP32 interface)
 
 ```
-VC1 -- 100k --+-- GPIO
+VC1 -- 300k --+-- GPIO
               |
-             100k to GND
+             150k to GND
               |
              100k to 3V3
               + 1N4148 to 3V3
               + 1N4148 to GND
 ```
 
-Map: \(v_{\mathrm{ADC}}=1.65+0.5\,V_{C1}\). A ±2 V swing stays inside 0.65–2.65 V.
+Map: \(v_{\mathrm{ADC}}=1.65+V_{C1}/6\). The double scroll (±4.33 V) stays inside 0.93–2.37 V and the outer-cycle escape (±7.35 V) inside 0.43–2.88 V, so the firmware can see an escape. (The old 100 k/100 k/100 k network gives \(1.1+V/3\), not the documented \(1.65+V/2\).)
 
 ---
 
@@ -140,7 +142,7 @@ Map: \(v_{\mathrm{ADC}}=1.65+0.5\,V_{C1}\). A ±2 V swing stays inside 0.65–2.
 4. Wire the three bias networks. Check with a DMM that each ADC node is ~1.65 V with analog power still **off** (only USB 3.3 V).
 5. USB-power the ESP32. Flash firmware (`firmware/README.md`). Confirm `FSOT_RLC_HARDWARE_BOOT=ok`.
 6. **Then** connect 9 V batteries. If the DevKit resets or smells, disconnect immediately — a clamp or bias is wrong.
-7. DMM the three pots to **11.12 kΩ**. Watch UART.
+7. DMM the three pots to **20 kΩ**, then **6.88 kΩ**, then sweep 13 → 11 kΩ. Watch UART.
 
 ---
 
@@ -148,12 +150,13 @@ Map: \(v_{\mathrm{ADC}}=1.65+0.5\,V_{C1}\). A ±2 V swing stays inside 0.65–2.
 
 | Test | All three pots | Must happen |
 |------|----------------|-------------|
-| Unlocked | 20 kΩ (\(\sigma\approx 0.9<\varphi\)) | `FSOT_RLC_LOCK=0`, trits mix, LED blinks |
-| Locked | **11.12 kΩ** (\(\sigma=\varphi\)) | `FSOT_RLC_LOCK=1`, three trits equal |
+| Unlocked | 20 kΩ (\(\sigma=0.9<\sigma_c\)) | `FSOT_RLC_LOCK=0` and `FSOT_RLC_AMP_OK=0`: the ring escapes to the outer ±7.35 V cycle. The trits may agree there, which is why LOCK needs the amplitude condition |
+| Locked (robust) | **6.88 kΩ** (\(\sigma=\varphi^2\)) | `FSOT_RLC_LOCK=1`, `AMP_OK=1`, three trits equal |
+| Threshold (sharp) | step 13 kΩ → 11 kΩ in 0.1 kΩ steps | LOCK first appears at \(R_c^{\ast}=12.08\,\mathrm{k}\Omega\) predicted (11.70–12.50 kΩ) |
 
 If unlocked looks locked, you have a ground loop or the pots are not actually 20 kΩ. If locked never happens, the three nodes are not copies (wrong R or C on one island) or analog rails are collapsing.
 
-You do **not** turn a pot until a 3% residual goes away. The prediction is the 11.12 kΩ setting.
+You do **not** turn a pot until a residual goes away. The predictions are the 12.08 kΩ threshold and the 6.88 kΩ lock.
 
 ---
 
@@ -180,7 +183,7 @@ z3 verification\circuit_bounds.smt2
 
 | Layer | Artifact |
 |-------|----------|
-| A pin / seeds | `sim/fsot_engine.py` SHA prefix `D1D38A` |
+| A pin / seeds | `sim/fsot_engine.py` SHA prefix `AEB2AD` |
 | B ODE + catalog | `results/sim_report.json` `overall_ok` |
 | C rust Θ / φ parity | `verification/verify_circuit.py` |
 | D SMT | `verification/circuit_bounds.smt2` |

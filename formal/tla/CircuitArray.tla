@@ -1,27 +1,34 @@
 ---- MODULE CircuitArray ----
+\* Bench states of the 3-ring (pin AEB2AD, branch fix/aeb2ad-long-window).
+\* Below sigma_c the ring escapes to the outer limit cycle (|V| > Bp2) where the nodes ALSO synchronise;
+\* the firmware LOCK requires trit agreement AND no escape, so those states must read LOCK = FALSE.
 EXTENDS Naturals
 
-CONSTANTS Open, BelowPhi, Phi, PhiSq
+CONSTANTS Open, Rc20k, Sigma1, Phi, PhiSq
 
-VARIABLES sigma, locked
+VARIABLES sigma, synced, escaped, locked
 
-TypeOK == sigma \in {Open, BelowPhi, Phi, PhiSq} /\ locked \in BOOLEAN
+States == {Open, Rc20k, Sigma1, Phi, PhiSq}
 
-Init == sigma = Open /\ locked = FALSE
+TypeOK == sigma \in States /\ synced \in BOOLEAN /\ escaped \in BOOLEAN /\ locked \in BOOLEAN
 
-SetOpen == sigma' = Open /\ locked' = FALSE
-SetBelowPhi == sigma' = BelowPhi /\ locked' = FALSE
-SetPhi == sigma' = Phi /\ locked' = TRUE
-SetPhiSq == sigma' = PhiSq /\ locked' = TRUE
+LockLaw == locked = (synced /\ ~escaped)
 
-Next == SetOpen \/ SetBelowPhi \/ SetPhi \/ SetPhiSq
+Init == sigma = Open /\ synced = FALSE /\ escaped = FALSE /\ locked = FALSE
 
-Spec == Init /\ [][Next]_<<sigma, locked>>
+Set(s, sy, es) == sigma' = s /\ synced' = sy /\ escaped' = es /\ locked' = (sy /\ ~es)
 
-LockExactlyAtOrAbovePhi ==
-  /\ (sigma = Open => locked = FALSE)
-  /\ (sigma = BelowPhi => locked = FALSE)
-  /\ (sigma = Phi => locked = TRUE)
-  /\ (sigma = PhiSq => locked = TRUE)
+Next == \/ Set(Open, FALSE, FALSE)
+        \/ Set(Rc20k, TRUE, TRUE)     \* sigma = 0.9 < sigma_c: escape + outer-cycle sync
+        \/ Set(Sigma1, TRUE, TRUE)    \* sigma = 1   < sigma_c
+        \/ Set(Phi, TRUE, FALSE)      \* sigma_c = 1.4897 < phi: double-scroll lock
+        \/ Set(PhiSq, TRUE, FALSE)    \* robust gate
+
+Spec == Init /\ [][Next]_<<sigma, synced, escaped, locked>>
+
+LockExactlyAboveSigmaC ==
+  /\ LockLaw
+  /\ (sigma \in {Open, Rc20k, Sigma1} => locked = FALSE)
+  /\ (sigma \in {Phi, PhiSq} => locked = TRUE)
 
 ====

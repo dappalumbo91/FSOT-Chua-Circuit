@@ -1,7 +1,8 @@
 """FSOT scalar pin for the Circuit lab.
 
-Authority is **this repo** `vendor/fsot_compute.py` (SHA-256 prefix D1D38A).
-Byte-identical to FSOT-2.1-Lean GitHub main. This application does not
+Authority is **this repo** `vendor/fsot_compute.py` (SHA-256 prefix AEB2AD).
+Byte-identical to FSOT-2.1-Lean GitHub main (re-vendored 2026-10-03 from D1D38A;
+EM D_eff 9 -> 7 from the nest, look 0.7 -> 1, C_EFF/K pi identities). This application does not
 inherit the hub's green gates — it re-proves its own obligations.
 """
 
@@ -19,6 +20,7 @@ if str(VENDOR) not in sys.path:
 from fsot_compute import (  # type: ignore
     A_BLEED,
     A_IN,
+    ALPHA,
     B_IN,
     C_EFF,
     C_FACTOR,
@@ -36,7 +38,7 @@ from fsot_compute import (  # type: ignore
     compute_scalar,
 )
 
-PIN_PREFIX = "D1D38A"
+PIN_PREFIX = "AEB2AD"
 COLLAPSE_THRESHOLD = float(C_EFF * P_VAR)
 DOMAIN_NAME = "Electromagnetism"
 PIN_PATH = VENDOR / "fsot_compute.py"
@@ -44,6 +46,8 @@ PIN_PATH = VENDOR / "fsot_compute.py"
 __all__ = [
     "A_BLEED",
     "A_IN",
+    "ALPHA",
+    "branch_l",
     "B_IN",
     "C_EFF",
     "C_FACTOR",
@@ -168,3 +172,30 @@ def snapshot() -> dict:
         "kappa_identical_EM": kappa_couple(S_em, S_em, float(cfg.D_eff), float(cfg.D_eff)),
         "scalar_trinary": trinary_from_scalar(S_em).label,
     }
+
+
+def branch_l(L_h: float, C2_f: float, R_ohm: float, name: str = DOMAIN_NAME) -> dict:
+    """FSOT 2.1 Branch L (lossy reactance), see docs/BRANCH_L_DERIVATION.md.
+
+    eps = |S_D| * ALPHA (Ledger B dressing of the reactance magnitude at omega_LC),
+    |Z|^2 = r0^2 + (omega L)^2  ->  k = sqrt((1+eps)^2 - 1) = 1/Q_L,
+    r0 = k sqrt(L/C2) [ohm],  gamma = beta r0 / R = k sqrt(beta) [dimensionless].
+    """
+    from mpmath import mp, mpf, sqrt as msqrt
+
+    mp.dps = 50
+    S = _domain_scalar_mp(name)
+    eps = abs(S) * ALPHA
+    k = msqrt((1 + eps) ** 2 - 1)
+    L, C2, R = mpf(str(L_h)), mpf(str(C2_f)), mpf(str(R_ohm))
+    r0 = k * msqrt(L / C2)
+    beta = R * R * C2 / L
+    return {"domain": name, "S": float(S), "eps": float(eps), "k": float(k), "Q_L": float(1 / k),
+            "r0_ohm": float(r0), "gamma": float(k * msqrt(beta))}
+
+
+def _domain_scalar_mp(name: str):
+    """Full-precision (mpf) domain scalar from the vendored authority."""
+    import fsot_compute as _fc  # type: ignore
+
+    return _fc.domain_scalar(name)

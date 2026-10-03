@@ -71,7 +71,7 @@ def main() -> int:
     record("python_algebra_pin", True, rc, out)
 
     rc, out = run([sys.executable, str(ROOT / "firmware" / "host_observer.py")])
-    host_ok = rc == 0 and "FSOT_RLC_PIN=D1D38A" in out
+    host_ok = rc == 0 and "FSOT_RLC_PIN=AEB2AD" in out
     record("python_host_observer", True, 0 if host_ok else rc or 1, out)
 
     # B — ODE application gates
@@ -80,7 +80,7 @@ def main() -> int:
         layers[-1]["status"] = "SKIP"
         layers[-1]["ok"] = True
     else:
-        rc, out = run([sys.executable, "-m", "sim.run_sim"], timeout=180)
+        rc, out = run([sys.executable, "-m", "sim.run_sim"], timeout=900)  # 2000-tau window
         record("python_chua_sweep", True, rc, out)
 
     rc, out = run([sys.executable, str(ROOT / "verification" / "verify_circuit.py")])

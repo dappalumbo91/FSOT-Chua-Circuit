@@ -34,6 +34,13 @@ esp_bootloader_esp_idf::esp_app_desc!();
 
 const BREAKPOINT_V: f64 = 1.0;
 const SAMPLE_PERIOD_US: u64 = 100; // 10 kS/s — audio-band Chua (~3 kHz LC)
+/// Outer NIC breakpoint Bp2 = Esat R3/(R2+R3) with Esat set by Bp1 = 1 V: 230/33 V. A node beyond it has left the
+/// double scroll for the outer limit cycle (~±7.35 V), where the three nodes also synchronise. That is NOT the lock.
+const BP2_V: f64 = 230.0 / 33.0;
+const PHI_INV: f64 = 0.6180339887498949;
+/// Lock window: 1024 samples = 102 ms ≈ 570 τ (τ = R C2 = 180 µs). Lock = trit agreement ≥ φ⁻¹ over the window
+/// AND every |V_C1| < Bp2 over the window (amplitude condition, sim/chua_array.lock_law).
+const LOCK_WINDOW: u32 = 1024;
 
 #[esp_rtos::main]
 async fn main(_spawner: embassy_executor::Spawner) -> ! {
@@ -63,13 +70,15 @@ async fn main(_spawner: embassy_executor::Spawner) -> ! {
     let s_trit = from_scalar(s_em);
     println!("FSOT RLC Observer v0.1");
     println!("FSOT_RLC_HARDWARE_BOOT=ok");
-    println!("FSOT_RLC_PIN=D1D38A");
+    println!("FSOT_RLC_PIN=AEB2AD");
     println!("FSOT_RLC_D_EFF={EM_D_EFF:.1}");
     println!("FSOT_RLC_S={s_em:.17}");
     println!("FSOT_RLC_THETA={COLLAPSE_THRESHOLD:.17}");
     println!("FSOT_RLC_SCALAR_TRIT={}", s_trit.as_i8());
 
     let mut frame: u32 = 0;
+    let (mut win_n, mut win_agree, mut win_max) = (0u32, 0u32, 0.0f64);
+    let (mut lock, mut amp_ok, mut last_agree, mut last_max) = (false, false, 0.0f64, 0.0f64);
     loop {
         let c0 = nb::block!(adc.read_oneshot(&mut pin0)).unwrap_or(0);
         let c1 = nb::block!(adc.read_oneshot(&mut pin1)).unwrap_or(0);
@@ -80,7 +89,23 @@ async fn main(_spawner: embassy_executor::Spawner) -> ! {
         let t0 = from_voltage(v0, BREAKPOINT_V);
         let t1 = from_voltage(v1, BREAKPOINT_V);
         let t2 = from_voltage(v2, BREAKPOINT_V);
-        let lock = t0 == t1 && t1 == t2;
+        win_n += 1;
+        if t0 == t1 && t1 == t2 {
+            win_agree += 1;
+        }
+        win_max = win_max
+            .max(libm::fabs(v0))
+            .max(libm::fabs(v1))
+            .max(libm::fabs(v2));
+        if win_n == LOCK_WINDOW {
+            last_agree = win_agree as f64 / LOCK_WINDOW as f64;
+            last_max = win_max;
+            amp_ok = win_max < BP2_V;
+            lock = last_agree >= PHI_INV && amp_ok;
+            win_n = 0;
+            win_agree = 0;
+            win_max = 0.0;
+        }
 
         if frame % 50 == 0 {
             println!("FSOT_RLC_FRAME_START frame={frame}");
@@ -88,6 +113,11 @@ async fn main(_spawner: embassy_executor::Spawner) -> ! {
             println!("FSOT_RLC_THETA={COLLAPSE_THRESHOLD:.17}");
             println!("FSOT_RLC_SCALAR_TRIT={}", s_trit.as_i8());
             println!("FSOT_RLC_LOCK={}", if lock { 1 } else { 0 });
+            println!(
+                "FSOT_RLC_AMP_OK={} max_abs_v={last_max:.3} bp2_v={BP2_V:.3}",
+                if amp_ok { 1 } else { 0 }
+            );
+            println!("FSOT_RLC_TRIT_AGREE={last_agree:.4}");
             println!("FSOT_RLC_NODE|0|{c0}|{v0:.6}|{}", t0.as_i8());
             println!("FSOT_RLC_NODE|1|{c1}|{v1:.6}|{}", t1.as_i8());
             println!("FSOT_RLC_NODE|2|{c2}|{v2:.6}|{}", t2.as_i8());

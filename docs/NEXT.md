@@ -18,14 +18,15 @@ Flash MicroPython first (`firmware/micropython/main.py`) if you want serial toda
 
 | Pots | Must see |
 |------|----------|
-| 20 kΩ | `FSOT_RLC_LOCK=0` |
-| 11.12 kΩ | `FSOT_RLC_LOCK=1`, three trits equal |
+| 20 kΩ | `FSOT_RLC_LOCK=0`, `FSOT_RLC_AMP_OK=0` (escaped) |
+| 6.88 kΩ (\(\varphi^2\)) | `FSOT_RLC_LOCK=1`, three trits equal |
+| sweep 13 → 11 kΩ | LOCK appears at 12.08 kΩ predicted (\(\sigma_c=1.4897\)) |
 
-If that fails with three identical nodes and safe ADC bias, the **application** is false — do not retune \(\varphi\).
+If that fails with three identical nodes and safe ADC bias, the **application** is false — do not retune \(\varphi\) or \(r_0\).
 
 ## 4. Log vs sim
 
-Pipe UART into `firmware/host_observer.py` (or a small decoder) and compare trit time series to `python -m sim.run_sim` at \(\sigma=\varphi\). That is the first hardware empirical row.
+Pipe UART into `firmware/host_observer.py` (or a small decoder) and compare the measured threshold with \(\sigma_c=1.4897\) and the inductor Q with 25.44 (`python -m sim.run_sim`). That is the first hardware empirical row.
 
 ## 5. Optional rigor
 

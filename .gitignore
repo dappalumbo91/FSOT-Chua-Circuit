@@ -20,3 +20,4 @@ formal/tla/*.out
 .idea/
 .vscode/
 *.pdb
+cpp/build/

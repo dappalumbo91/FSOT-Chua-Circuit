@@ -89,3 +89,18 @@ jobs:
         run: |
           java -cp ../../tools/tla/tla2tools.jar tlc2.TLC -config CircuitArray.cfg CircuitArray.tla | tee /tmp/tlc.out
           grep -q "No error has been found" /tmp/tlc.out
+
+  cpp:
+    name: C++20 Branch L golden + ring tools
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install toolchain
+        run: sudo apt-get update && sudo apt-get install -y ninja-build libboost-dev
+      - name: Configure (fetches FSOT-2.1-Cpp at the pinned AEB2AD commit)
+        run: cmake -S cpp -B cpp/build -G Ninja -DCMAKE_BUILD_TYPE=Release
+      - name: Build
+        run: cmake --build cpp/build
+      - name: ctest
+        run: ctest --test-dir cpp/build --output-on-failure

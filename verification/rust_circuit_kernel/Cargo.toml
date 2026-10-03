@@ -8,3 +8,6 @@ description = "Host replay of FSOT-Circuit seed identities (no ESP32)"
 [[bin]]
 name = "fsot-circuit-verify"
 path = "src/main.rs"
+
+[dependencies]
+libm = "0.2"

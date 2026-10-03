@@ -8,4 +8,4 @@
 
 The math gate does not wait on a successful `espflash`. Flash is a hardware bring-up step (`docs/NEXT.md`).
 
-Do not treat a firmware compile failure as a pin failure. Do not treat a successful flash as a lock proof — UART `FSOT_RLC_LOCK` on the triangle at 11.12 kΩ is that proof.
+Do not treat a firmware compile failure as a pin failure. Do not treat a successful flash as a lock proof — UART `FSOT_RLC_LOCK=1` with `FSOT_RLC_AMP_OK=1` at 6.88 kΩ, `LOCK=0` at 20 kΩ, and the threshold near 12.08 kΩ are that proof.

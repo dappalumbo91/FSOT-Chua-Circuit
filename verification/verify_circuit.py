@@ -2,8 +2,8 @@
 
 Layers:
   A  pin + zero free params + seed φ
-  B  sim_report gates (ODE lock at σ=φ, BOM catalog residual)
-  C  rust-kernel constant parity (Θ = C_eff P_var)
+  B  sim_report gates (2000-tau amplitude-checked lock: σ=φ² robust, σ_c sharp; BOM catalog residual)
+  C  rust-kernel constant parity (Θ = C_eff P_var, parsed from the firmware source)
   D  SMT bounds file present and well-formed
 
 Usage (from Circuit folder):
@@ -12,9 +12,9 @@ Usage (from Circuit folder):
 
 from __future__ import annotations
 
-import hashlib
 import json
 import math
+import re
 import sys
 from pathlib import Path
 
@@ -22,6 +22,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 from sim.chua_array import PHI_F, PhysicalNode  # noqa: E402
+from sim.predict import SIGMA_C_PRED  # noqa: E402
 from sim.fsot_engine import (  # noqa: E402
     C_EFF,
     P_VAR,
@@ -34,10 +35,21 @@ from sim.fsot_engine import (  # noqa: E402
 REPORT = ROOT / "results" / "sim_report.json"
 OBL = ROOT / "verification" / "obligations.json"
 
-# Frozen rust kernel constants (firmware/esp32_rlc_observer/src/scalar.rs).
-RUST_C_EFF = 0.9577022026205613
-RUST_P_VAR = 0.9579871226722757
-RUST_PHI = 1.6180339887
+# Rust kernel constants, parsed from the firmware source (firmware/esp32_rlc_observer/src/scalar.rs).
+_RS = (ROOT / "firmware" / "esp32_rlc_observer" / "src" / "scalar.rs").read_text(encoding="utf-8")
+
+
+def _rust_const(name: str) -> float:
+    m = re.search(rf"const {name}: f64 = ([-0-9.eE]+);", _RS)
+    if not m:
+        raise KeyError(name)
+    return float(m.group(1))
+
+
+RUST_C_EFF = _rust_const("C_EFF")
+RUST_P_VAR = _rust_const("P_VAR")
+RUST_PHI = _rust_const("PHI")
+RUST_EM_D_EFF = _rust_const("EM_D_EFF")
 
 
 def err_pct(a: float, b: float) -> float:
@@ -68,18 +80,27 @@ def main() -> None:
         {
             "id": "collapse_theta_parity",
             "layer": "C",
-            "ok": err_pct(theta, RUST_C_EFF * RUST_P_VAR) < 0.05,
+            "ok": err_pct(theta, RUST_C_EFF * RUST_P_VAR) < 1e-12,
             "detail": {"python": theta, "rust": RUST_C_EFF * RUST_P_VAR},
         },
         {
             "id": "phi_rust_parity",
             "layer": "C",
-            "ok": err_pct(float(PHI), RUST_PHI) < 0.05,
+            "ok": err_pct(float(PHI), RUST_PHI) < 1e-12,
             "detail": {"python": float(PHI), "rust": RUST_PHI},
         },
+        {"id": "em_D_eff_rust_parity", "layer": "C", "ok": RUST_EM_D_EFF == 7.0, "detail": RUST_EM_D_EFF},
         {"id": "sim_overall_ok", "layer": "B", "ok": bool(gates.get("overall_ok")), "detail": gates},
-        {"id": "phi_locked", "layer": "B", "ok": bool(gates.get("phi_locked")), "detail": report.get("lock")},
+        {"id": "phi_sq_locked", "layer": "B", "ok": bool(gates.get("phi_sq_locked")), "detail": report.get("lock_rate")},
+        {"id": "sigma_c_sharp", "layer": "B", "ok": bool(gates.get("sigma_c_sharp")),
+         "detail": {"predicted": SIGMA_C_PRED, "sweep": (report.get("sigma_c") or {}).get("sweep_threshold")}},
+        {"id": "phi_consistent_with_sigma_c", "layer": "B", "ok": bool(gates.get("phi_consistent_with_sigma_c")), "detail": None},
         {"id": "open_unlocked", "layer": "B", "ok": bool(gates.get("open_unlocked")), "detail": None},
+        {"id": "sigma1_unlocked", "layer": "B", "ok": bool(gates.get("sigma1_unlocked")), "detail": None},
+        {"id": "rc20k_unlocked_amplitude_checked", "layer": "B", "ok": bool(gates.get("rc20k_unlocked")), "detail": None},
+        {"id": "integration_long_window_no_clip", "layer": "B",
+         "ok": (report.get("integration") or {}).get("t_end_tau", 0) >= 2000 and (report.get("integration") or {}).get("clip") is None,
+         "detail": report.get("integration")},
         {
             "id": "bom_catalog_green",
             "layer": "B",
