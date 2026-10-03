@@ -8,7 +8,8 @@ locks = {'LOCK_M1_2026-10-03_minimal_jerk.md': '078343de14f49cf8116b9fb9c53ad764
          'LOCK_D2_2026-10-03_branchD_numbers.md': '3fe1b39aa51f12a9695e51f8d3299c1d11acc582ac2e86e47d8f1a34efd3d55c',
          'LOCK_DJ_2026-10-03_fsot_junction.md': 'f80d7d0d26b14cd584b19c12ead3de7d51a20bdf4e292f2c0673a05420db4467',
          'LOCK_T_2026-10-03_fsot_topology.md': '61f259b203a56124d58b9df72323b6804f6ee7c9f332d8e12e1adfcf52ffccf7',
-         'LOCK_T2_2026-10-03_gammarel_small_basin.md': '724228ea9cc29937f176c4150ba974667cd0a12098ae86a36a9090571526de61'}
+         'LOCK_T2_2026-10-03_gammarel_small_basin.md': '724228ea9cc29937f176c4150ba974667cd0a12098ae86a36a9090571526de61',
+         'LOCK_B_2026-10-03_bridge_precision_rectifier.md': 'f5e71c49916b523a1fcb8879d390821dbc6318b04e2c5c45a296ba89786998f4'}
 for f, h in locks.items():
     assert hashlib.sha256(open(os.path.join(R, 'predictions', f), 'rb').read()).hexdigest() == h, f
 out = subprocess.run([os.path.join(R, 'mj'), 'le', 'nic=4', 'T=3000'], capture_output=True, text=True, check=True).stdout.splitlines()[1:]
@@ -39,3 +40,10 @@ if os.path.exists(os.path.join(R, 'topo', 'tj')):
     o = subprocess.run([os.path.join(R, 'topo', 'tj'), '0.42804344605980688', '0', '1', '1', 'sgn', '0', '4', '1000'], capture_output=True, text=True).stdout.split('\n')
     assert all(l.split('\t')[6] == '0' for l in o if l.strip()), o
     print('LOCK T replay OK (S-a unbounded)')
+# LOCK B: precision-rectifier bridge (topo/bpr): B1-B3 replay from the mapped attractor IC (bounded, lambda1 ~ 0.0156, f ~ 817 Hz)
+if os.path.exists(os.path.join(R, 'topo', 'bpr')):
+    o = subprocess.run([os.path.join(R, 'topo', 'bpr'), 'ic'], capture_output=True, text=True, cwd=os.path.join(R, 'topo')).stdout
+    print(o.strip().splitlines()[-1])
+    m = dict(re.findall(r"(\w+)=([-0-9.eE+naif]+)", o.strip().splitlines()[-1]))
+    assert m.get('bounded') == '1' and abs(float(m['l1']) - 0.0156) < 0.2 * 0.0156 and abs(float(m['f_Hz']) - 817) < 0.05 * 817, m
+    print('LOCK B replay OK')

@@ -44,3 +44,9 @@
 - [x] docs, REPORT, check_minimal (new locks, datasheet checksums, S-a replay). NEXT: tests, commit, push
 - [x] PROOF: horseshoe.cpp verifies 4/4 covering relations under P^4 at A = γ_rel (ideal), entropy ≥ ln2/4. CI job horseshoe-proof
 - [x] docs, REPORT, check_minimal (new locks, datasheet checksums, S-a replay). NEXT: tests, commit, push
+
+## Task 5 (bridge ideal→hardware), started 09:23 ET
+- [ ] 0 PNG label + CI check  - [ ] 2 derive+lock  - [ ] test  - [ ] 3
+- [x] 0: PNG relabelled VERIFIED; CI run 37125792896 on b6d2cd9 is all green (horseshoe-proof 4m13s, Pin+algebra+ODE+SMT 4m26s), so no certificate cache is needed
+- [x] 2: LOCK B f5e71c49… (precision rectifier, ε = 6.2e-7). B1, B2, B3 confirmed (C++). B4 confirmed (1/16, basin not usable). B5 FALSIFIED (ngspice TI: rail latch after about 5 cycles). B6 confirmed
+- [x] 3: not triggered (B4 holds, B5 failed). Honest report and next branch in REPORT.md. NEXT: tests, commit, push
