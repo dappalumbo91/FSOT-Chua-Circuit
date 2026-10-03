@@ -44,3 +44,9 @@ minimal/topo/bd_ic
 minimal/datasheets/*.pdf
 minimal/datasheets/*.png
 minimal/topo/bpr
+minimal/pathj/pj
+minimal/pathc/pc
+minimal/proof/horseshoe_bg
+minimal/proof/sec_bg
+spice/out/pc5_tl082_v9.1899.dat
+spice/out/pc5_tl082_v9.0.dat

@@ -57,3 +57,11 @@ N2 =P^4=> N2 : VERIFIED (max|s| on |u|<=1: 0.4442)
 - It proves a chaotic invariant set, not that the observed attractor is chaotic.
 - Rigour assumes IEEE-754 correctly rounded +, −, ×, ÷, widened outward by one ulp. No transcendental library calls are used.
 - The h-set geometry (mk_hsets.py, section_gammarel.npy) is non-rigorous input. Only the check is rigorous.
+
+---
+# Path J proof attempt (LOCK PJ winner, B = Θ, G = κ/γ_rel): not reached
+- `horseshoe_bg.cpp` generalises horseshoe.cpp to x‴ = −A x″ − B x′ + G|x| − 1, in scaled coordinates X = G·x. FSOT_B and FSOT_G set B and G. With B = G = 1 it reproduces the horseshoe.cpp map to 1e-12.
+- `sec_bg.cpp` is a non-rigorous section sampler, and `mk_hsets_pj.py` / `spine_pj.py` give non-rigorous geometry.
+- The first golden-mean h-sets (N1 = y ∈ [0.95, 1.545], N2 = y ∈ [1.71, 1.82], P¹; golden_pj.txt) **failed** all 3 covering checks. The P¹ images are curved across the band (|s| up to 34 widths), so straight h-sets do not work.
+- **Next:** curved (spline-aligned) h-sets, or P² with thinner sets.
+- The Path C (Chua) proof needs a 3-region crossing engine (boundaries x = ±1). It was not built this pass.

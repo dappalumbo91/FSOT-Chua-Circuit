@@ -72,3 +72,11 @@ PNGs (in `png/`):
 
 ## Ideal-to-hardware bridge (LOCK B; results/LOCK_B_score.md)
 FSOT has no voltage scale, so the diode-knee ratio ε = nV_T/U_eff cannot be fixed by an FSOT-derived U_eff. The FSOT-consistent choice is ε → 0 through a precision rectifier (ε = 6.2e-7 with n = 1 + S_EM). In C++ this reproduces the ideal γ_rel attractor: λ1 = 0.0149/τ0, 815.8 Hz, x ∈ [−2.339, 1.448]·U, all confirmed. The basin is not usable (1/16 seeds; B4 confirmed). In ngspice with TI TL082 macro-models the trajectory latches to the rail after about 5 cycles even from the attractor IC (B5 falsified). **Verdict:** the A = γ_rel jerk is a proven-chaotic ideal system (horseshoe, h ≥ ln2/4) but not a buildable bench circuit. Suggested next FSOT branch: a locked, FSOT-derived second coefficient (e.g. the x′ gain, currently 1) chosen by a stated criterion that maximises basin measure. Alternatively, return to a Chua-family topology with Branch L, where the attractor is robust.
+
+## Path J vs Path C (LOCK PJ 7524bad0…, LOCK PC 67274bb1…; results/LOCK_PJ_PC_score.md)
+- **LOCK T's F1 theorem was wrong.** The |x| jerk with x′ gain B and |x| slope G has two essential parameters, (γ/√B, G/B^{3/2}), not one. The 49 FSOT (B, G) pairs had never been simulated, so they could be tested blind.
+- **Path J winner** (locked max-basin rule): B = Θ, G = κ/γ_rel, with 43/64 chaotic, λ1 = 0.065/τ0 and 822 Hz.
+  - It **survives ngspice with TI TL082 models from both starts**, and with E96 values too.
+  - PJ1 (the χ-band heuristic picks the winner) was falsified. PJ2–PJ8 were confirmed.
+- **Path C** (Kennedy–Chua at Branch L): PC2–PC6 confirmed. PC1 falsified: the basin is 34/64 because a coexisting outer limit cycle takes the rest.
+- **Proofs for both:** not reached this pass.

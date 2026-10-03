@@ -126,6 +126,8 @@ jobs:
           g++ -std=c++20 -O2 -fopenmp -o proof/proof proof/proof.cpp
           g++ -std=c++20 -O2 -o topo/tj topo/tj.cpp
           g++ -std=c++20 -O2 -o topo/bpr topo/bpr.cpp
+          g++ -std=c++20 -O3 -fopenmp -o pathj/pj pathj/pj.cpp
+          g++ -std=c++20 -O3 -fopenmp -o pathc/pc pathc/pc.cpp
       - name: "Interval proof replay (covering relation Na => Na at A = 1/phi)"
         working-directory: minimal/proof
         run: NSUB=256 ./proof check hsets.txt
@@ -133,6 +135,7 @@ jobs:
         working-directory: minimal
         run: |
           python3 tools/check_minimal.py
+          python3 tools/verify_layout_pj.py
           ./oa nic=2 T=500
       - name: "ngspice smoke (ideal E-source op-amps, real 1N4148), R_A 2912.5 periodic and R_A 3150 chaotic"
         working-directory: minimal/spice

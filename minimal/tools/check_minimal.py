@@ -9,7 +9,9 @@ locks = {'LOCK_M1_2026-10-03_minimal_jerk.md': '078343de14f49cf8116b9fb9c53ad764
          'LOCK_DJ_2026-10-03_fsot_junction.md': 'f80d7d0d26b14cd584b19c12ead3de7d51a20bdf4e292f2c0673a05420db4467',
          'LOCK_T_2026-10-03_fsot_topology.md': '61f259b203a56124d58b9df72323b6804f6ee7c9f332d8e12e1adfcf52ffccf7',
          'LOCK_T2_2026-10-03_gammarel_small_basin.md': '724228ea9cc29937f176c4150ba974667cd0a12098ae86a36a9090571526de61',
-         'LOCK_B_2026-10-03_bridge_precision_rectifier.md': 'f5e71c49916b523a1fcb8879d390821dbc6318b04e2c5c45a296ba89786998f4'}
+         'LOCK_B_2026-10-03_bridge_precision_rectifier.md': 'f5e71c49916b523a1fcb8879d390821dbc6318b04e2c5c45a296ba89786998f4',
+         'LOCK_PJ_2026-10-03_xprime_and_slope_gains.md': '7524bad0a822198bc8444ab9e5c08dd21d2c2e45ee45773ac74ae7e78352c4f8',
+         'LOCK_PC_2026-10-03_branchL_minimal_chua.md': '67274bb1a765c7b40ad5976f5fafed20a8e1c8defce0ec9289f01201e89b484f'}
 for f, h in locks.items():
     assert hashlib.sha256(open(os.path.join(R, 'predictions', f), 'rb').read()).hexdigest() == h, f
 out = subprocess.run([os.path.join(R, 'mj'), 'le', 'nic=4', 'T=3000'], capture_output=True, text=True, check=True).stdout.splitlines()[1:]
@@ -47,3 +49,14 @@ if os.path.exists(os.path.join(R, 'topo', 'bpr')):
     m = dict(re.findall(r"(\w+)=([-0-9.eE+naif]+)", o.strip().splitlines()[-1]))
     assert m.get('bounded') == '1' and abs(float(m['l1']) - 0.0156) < 0.2 * 0.0156 and abs(float(m['f_Hz']) - 817) < 0.05 * 817, m
     print('LOCK B replay OK')
+# LOCK PJ winner replay (pathj/pj) and LOCK PC single-node replay (pathc/pc)
+if os.path.exists(os.path.join(R, 'pathj', 'pj')):
+    o = subprocess.run([os.path.join(R, 'pathj', 'pj'), 'one', '0.91751027120648765', '0.73504813634763333', '-0.7625', '0.4619', '1.1851', '3000'], capture_output=True, text=True).stdout.strip()
+    m = dict(re.findall(r"(\w+)=([-0-9.eE+naif]+)", o)); print('PJ', o)
+    assert m['bounded'] == '1' and 0.015 < float(m['l1']) < 0.08, o
+    print('LOCK PJ replay OK')
+if os.path.exists(os.path.join(R, 'pathc', 'pc')):
+    o = subprocess.run([os.path.join(R, 'pathc', 'pc'), 'one'], capture_output=True, text=True).stdout.strip().splitlines()[-1]
+    m = dict(re.findall(r"([\w|]+)=([-0-9.eE+naif]+)", o)); print('PC', o)
+    assert m['double_scroll'] == '1' and abs(float(m['l1']) - 0.245) < 0.0245, o
+    print('LOCK PC replay OK')

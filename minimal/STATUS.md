@@ -50,3 +50,10 @@
 - [x] 0: PNG relabelled VERIFIED; CI run 37125792896 on b6d2cd9 is all green (horseshoe-proof 4m13s, Pin+algebra+ODE+SMT 4m26s), so no certificate cache is needed
 - [x] 2: LOCK B f5e71c49… (precision rectifier, ε = 6.2e-7). B1, B2, B3 confirmed (C++). B4 confirmed (1/16, basin not usable). B5 FALSIFIED (ngspice TI: rail latch after about 5 cycles). B6 confirmed
 - [x] 3: not triggered (B4 holds, B5 failed). Honest report and next branch in REPORT.md. NEXT: tests, commit, push
+
+## Task 6 (Path J vs Path C), started 09:39 ET
+- [ ] J: lock  - [ ] J: sims  - [ ] C: lock  - [ ] C: sims  - [ ] C: proof  - [ ] compare + visuals
+- [x] LOCK PJ 7524bad0… (also corrects the LOCK T F1 theorem: 2 essential parameters). C++ scan: winner B = Θ, G = κ/γ_rel, 43/64 chaotic. PJ1 falsified (winner χ = 0.534 is outside the band; 1/4 in-band candidates chaotic); PJ2, PJ3, PJ4 (822 vs 915 Hz, −10 %), PJ5 and PJ8 (29/32) confirmed. ngspice TI: PJ6 and PJ7 confirmed (110/108 distinct maxima, both starts); E96 also chaotic
+- [x] LOCK PC 67274bb1… locked. NEXT: Path C sims (basin, MC, ngspice), then proof
+- [x] PC: PC1 FALSIFIED (34/64; outer limit cycle). PC2, PC3, PC4, PC5 and PC6 confirmed. Proofs: not reached (horseshoe_bg generalised; P¹ h-sets failed; Chua 3-region engine not built)
+- [x] Path J visuals: falstad/fsot_pj_theta_kg.url, png/schematic_pj.png, png/breadboard_pj.png (verified by tools/verify_layout_pj.py), BENCH_BUILD_GUIDE_PJ.md. Path C: existing build_visuals plus BENCH_PATH_C_ADDENDUM.md. Score: results/LOCK_PJ_PC_score.md. NEXT: check_minimal, CI, sync, push
