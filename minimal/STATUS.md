@@ -31,3 +31,4 @@
 - [x] ngspice scoring: D-T0/T60/V12 confirmed; K-1 rail latch confirmed (FSOT knob not chaotic); K′ periodic confirmed (results/LOCK_D_score.md, png/lockD2_edge_shifts.png)
 - [x] proof/: Na ⇒ Na VERIFIED at A = 1/φ (periodic orbit exists); horseshoe not reached
 - [x] guide, REPORT and Falstad (added the derived 4.22k link) updated. NEXT: CI step, tests, commit, push
+- [x] tests green (algebra, falstad x2, ctest 2/2, check_minimal + Branch D replay, proof check); committed 0d04b38 and pushed (verified with ls-remote)
