@@ -79,6 +79,16 @@ Full report: [error_budget/ERROR_BUDGET.md](error_budget/ERROR_BUDGET.md). Bench
 
 ---
 
+## Pressure-point refinement (2026-10-03)
+
+Report: [refine/REFINE_REPORT.md](refine/REFINE_REPORT.md). Bench build guide with staged checkpoints: [build_visuals/BENCH_BUILD_GUIDE.md](build_visuals/BENCH_BUILD_GUIDE.md).
+Locks (sha256, written before comparison): A `400cdd10…ef4b`, B `3594a469…f79c`, C `86ae8340…80f6` in [refine/predictions/](refine/predictions/).
+
+- **Op-amp correction:** the dressed-pole closed form is falsified quantitatively (2 of 11 cases within tolerance). The parameter-free 5-dim C++ model tracks SPICE: TL082 at r0 = 18.44 Ω gives Δσc −0.019 (TL082, 3 MHz) or −0.040 (TL08xH).
+- **Periodic windows:** 16.98–17.26 Ω and 9.59–10.18 Ω, plus hair-thin windows at 18.21 and 18.66 Ω. 18.44 Ω is chaotic with λ1 = 0.26/τ0. The φ-spacing hypotheses failed.
+- **Branch C** (dressed capacitors) is falsified by film-capacitor tanδ. **Branch N** (NIC delay) collapses the node. L vs L′ is left to the bench (Q, ring-down, Rc = 13.3 kΩ ring).
+- **Refined budget at 18.44 Ω:** 1.4955 (ideal) − 0.019…−0.040 (op-amp) − 0.0024 (parasitics) = 1.453–1.474, inside SPICE TL082 (1.45, 1.475].
+
 ## Current stage — move forward in this order
 
 Software and formal gates on this tree are green (`overall_ok: true`, pin AEB2AD, 2000 τ window). The next kill is **hardware**.

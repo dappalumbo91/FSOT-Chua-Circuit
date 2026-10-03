@@ -1,0 +1,10 @@
+# msf5 e1=0 e2=0 SRn=1e+30 gamma=0.21329239 g1p=0 g2p=0 dt=0.005 T=20000
+ic=0 sigc=nan lam1=0.19676 maxabs=4.3390 frot_per_tau=0.46265 lobes_per100tau=5.855 frac_inner=0.0438
+ic=1 sigc=nan lam1=0.19567 maxabs=4.3390 frot_per_tau=0.46268 lobes_per100tau=5.845 frac_inner=0.0432
+ic=2 sigc=nan lam1=0.20053 maxabs=4.3390 frot_per_tau=0.46275 lobes_per100tau=5.890 frac_inner=0.0448
+ic=3 sigc=nan lam1=0.19667 maxabs=4.3390 frot_per_tau=0.46242 lobes_per100tau=5.830 frac_inner=0.0436
+ic=4 sigc=nan lam1=0.19123 maxabs=4.3390 frot_per_tau=0.46168 lobes_per100tau=5.760 frac_inner=0.0417
+ic=5 sigc=nan lam1=0.19213 maxabs=4.3390 frot_per_tau=0.46180 lobes_per100tau=5.825 frac_inner=0.0422
+ic=6 sigc=nan lam1=0.19472 maxabs=4.3390 frot_per_tau=0.46200 lobes_per100tau=5.815 frac_inner=0.0427
+ic=7 sigc=nan lam1=0.19950 maxabs=4.3390 frot_per_tau=0.46175 lobes_per100tau=5.790 frac_inner=0.0433
+#mean sigc=-nan sd=0.00000 n=0

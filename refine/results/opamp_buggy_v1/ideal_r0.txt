@@ -1,0 +1,6 @@
+# msf5 e1=0 e2=0 SRn=1e+30 gamma=0.00000000 g1p=0 g2p=0 dt=0.005 T=3000
+ic=0 sigc=2.23446 lam1=0.44031 maxabs=4.2940 frot_per_tau=0.45350 lobes_per100tau=21.867 frac_inner=0.1037
+ic=1 sigc=2.25517 lam1=0.45202 maxabs=4.2945 frot_per_tau=0.45183 lobes_per100tau=21.967 frac_inner=0.1114
+ic=2 sigc=2.26195 lam1=0.46076 maxabs=4.2944 frot_per_tau=0.45183 lobes_per100tau=23.267 frac_inner=0.1144
+ic=3 sigc=2.27143 lam1=0.44571 maxabs=4.2945 frot_per_tau=0.44783 lobes_per100tau=24.400 frac_inner=0.1163
+#mean sigc=2.25575 sd=0.01568 n=4

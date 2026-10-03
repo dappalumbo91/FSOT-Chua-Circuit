@@ -114,3 +114,12 @@ Our required ±3 % (±0.046 in σc) is about 4× tighter than anything published
 - `mapnet_N_topo*.png` (N = 3–6, ring vs all-to-all, γ = 0.10 / 0.151 / 0.213): the 5/6 thresholds at γ 0.151 are ring 1.6 / 2.3 / 3.3 / 4.6 and all-to-all 1.6 / 1.2 / 1.0 / 0.8 (grid 0.1).
   MSF scaling 3·1.4955/λ2 gives 1.50 / 2.24 / 3.25 / 4.49 and 1.50 / 1.12 / 0.90 / 0.75. Cluster states (1 < clusters < N, not locked) appear mainly in the N = 6 ring near threshold (14 runs at γ 0.151, 41 at γ 0.213). Ring N = 6 at γ = 0.10 does not lock below σ = 5.
 - Robust: lock-rule constants, dt, ADC loading, c, and symmetric Esat. Sensitive: L (β), C1 (α), r (γ), the amplitude check, and the IC spread.
+
+## Refined budget (2026-10-03, see refine/REFINE_REPORT.md, Target 6)
+| term | value |
+|---|---|
+| ideal C++ MSF, IC-mean | 1.4955 |
+| op-amp TL082: LOCK C formula / rf sim / TL08xH sim | −0.0627 / −0.0194 / −0.0401 |
+| parasitics (LOCK B) | −0.0024 |
+| refined total, locked route / sim TL082 / sim TL08xH | 1.4304 / 1.4737 / 1.4530 |
+| SPICE TI TL082 at r0 18.44 Ω | (1.45, 1.475] |
