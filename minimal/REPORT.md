@@ -9,6 +9,9 @@ Engines: `src/mj.cpp` (ideal, Lyapunov spectrum, bifurcation, homoclinic search)
 | M2 | bench knob edge, TL07x effect, SPICE chaos | 5a794149f2af44a1ee3ee16b110cb72f26a5bd9c535b684d175b2b1366113481 |
 | J | side task: A derived from FSOT laws, independent of φ (J1 = k, J2 = γ) | 3683004b8c9d3a53325bc340d6d5eff0f37293ba245dcba0d4a960395617117f |
 | D1 | no-post-hoc pass: knob A = γ_rel (R_A = 4205 Ω), secondary A = \|S_med\| (2744 Ω); τ0 and U_eff as engineering scales; Branch D = Shockley 1N4148 model (see REPO_SURVEY.md) | 9a9bd4cb83db98e088ba7898ea3272cb5cf4886f5c4d2c709a652c1df0f02ad1 |
+| DJ | Branch DJ junction physics: n = 1 + S_EM, V_T = kT/q, I_s(T) ∝ T^(3/n) e^(−E_g/(n kT)); datasheet-blind decade and tempco predictions | f80d7d0d26b14cd584b19c12ead3de7d51a20bdf4e292f2c0673a05420db4467 |
+| T | FSOT-picked topology: γ_rel fixed, 16 candidates, analytic screen, fewest-parts rule, so the winner is S-a | 61f259b203a56124d58b9df72323b6804f6ee7c9f332d8e12e1adfcf52ffccf7 |
+| T2 | post-hoc small-basin γ_rel attractor; downstream predictions | 724228ea9cc29937f176c4150ba974667cd0a12098ae86a36a9090571526de61 |
 | D2 | Branch D numbers from bd.cpp (edge at 27 °C not blind; blind edge shifts at 0 °C, 60 °C and ±12 V; knob points), locked before ngspice | 3fe1b39aa51f12a9695e51f8d3299c1d11acc582ac2e86e47d8f1a34efd3d55c |
 
 ## Scorecard
@@ -61,3 +64,8 @@ PNGs (in `png/`):
 - `attractors_cpp_vs_spice.png`
 - `schematic_minimal.png`
 - `breadboard_minimal.png`
+
+## Branch DJ, FSOT topology and chaos proof (LOCK DJ, T and T2; results/LOCK_DJ_T_score.md)
+- **DJ** (n = 1 + S_EM = 1.9557): the decade slope (0.1157 V predicted, 0.1183 V observed), the low-current decade and the per-decade tempco change are confirmed against Vishay Fig. 1. The 100 mA decade (series resistance) and the Diodes Inc max-spec decade are falsified. The DJ-derived knob still sits outside the chaos band. See png/lockDJ_diode.png.
+- **Topology** (γ_rel fixed): 16 candidates were examined. The locked winner S-a, x‴ = −γ_rel x″ − x + sgn(x), is **falsified**: it is unbounded in C++ and runs a rail-to-rail cycle in ngspice. No FSOT-fixed design produced a working chaotic circuit, so no new schematic, breadboard or bench guide was made.
+- **Proof:** at the exact FSOT knob A = γ_rel, the ideal jerk has a small-basin attractor (seen post-hoc). The C++20 interval prover verifies a **2-symbol horseshoe for P⁴, giving topological entropy ≥ ln2/4 ≈ 0.173**. See proof/README.md, proof/horseshoe_run.log and png/gammarel_section_horseshoe.png. With the real diode, this set is not reached (T2-4 and T2-5 falsified).

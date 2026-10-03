@@ -38,3 +38,8 @@ minimal/spice/out/*.dat
 minimal/spice/out/*.log
 minimal/bd
 minimal/proof/proof
+minimal/proof/horseshoe
+minimal/topo/tj
+minimal/topo/bd_ic
+minimal/datasheets/*.pdf
+minimal/datasheets/*.png

@@ -32,3 +32,15 @@
 - [x] proof/: Na ⇒ Na VERIFIED at A = 1/φ (periodic orbit exists); horseshoe not reached
 - [x] guide, REPORT and Falstad (added the derived 4.22k link) updated. NEXT: CI step, tests, commit, push
 - [x] tests green (algebra, falstad x2, ctest 2/2, check_minimal + Branch D replay, proof check); committed 0d04b38 and pushed (verified with ls-remote)
+
+## Task 4 (DJ + FSOT topology + chaos proof), started 08:57 ET
+- [ ] P1 DJ derivation + datasheet + lock  - [ ] P2 candidates + lock  - [ ] sims  - [ ] proof
+- [x] LOCK DJ f80d7d0d… LOCK T 61f259b2… LOCK T2 724228ea… (sha files in predictions/)
+- [x] DJ scored (datasheets/fig1_digitized.json): DJ1, DJ3, DJ4, DJ5 pass; DJ2 fails (Rs); DJ6 fails narrowly (max spec); DJ-K confirmed (rail latch; DJ edge 3100 Ω)
+- [x] T: S-a FALSIFIED (C++ unbounded in all ICs; ngspice rail-to-rail periodic). 16 candidates; only A-c (≡ canonical at γ_rel) bounded, in 1 of 4 ICs
+- [x] T2 (post-hoc small-basin attractor at γ_rel): T2-1 falsified (basin < 0.005), T2-4/T2-5 falsified (real diode → rail latch)
+- [ ] NEXT: proof at A = γ_rel, ideal canonical (mean-value form + Thm-16 covering graph)
+- [x] PROOF: horseshoe.cpp verifies 4/4 covering relations under P^4 at A = γ_rel (ideal), entropy ≥ ln2/4. CI job horseshoe-proof
+- [x] docs, REPORT, check_minimal (new locks, datasheet checksums, S-a replay). NEXT: tests, commit, push
+- [x] PROOF: horseshoe.cpp verifies 4/4 covering relations under P^4 at A = γ_rel (ideal), entropy ≥ ln2/4. CI job horseshoe-proof
+- [x] docs, REPORT, check_minimal (new locks, datasheet checksums, S-a replay). NEXT: tests, commit, push

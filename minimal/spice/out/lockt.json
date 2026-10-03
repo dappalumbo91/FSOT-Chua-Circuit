@@ -1,0 +1,20 @@
+{
+ "T4_Sa": {
+  "name": "t4_Sa",
+  "xmin": -7.4766692,
+  "xmax": 7.477374039940004,
+  "f_peak": 548.0,
+  "n_distinct_maxima": 2,
+  "n_maxima": 975,
+  "flatness": 5.3110324060694164e-05
+ },
+ "T2-5": {
+  "name": "t25_4205",
+  "xmin": 3.977088458584658,
+  "xmax": 7.4774566,
+  "f_peak": 360.0,
+  "n_distinct_maxima": 1,
+  "n_maxima": 180,
+  "flatness": 0.0002460252126313308
+ }
+}
