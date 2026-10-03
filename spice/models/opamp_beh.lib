@@ -1,0 +1,16 @@
+* Behavioral op-amp models for the FSOT Kennedy-Chua node (written for this project; free to commit).
+* Pin order matches TI macromodels: inp inn vcc vee out  (vcc/vee unused by these models).
+*
+* (A memoryless clamp B-source was tried first; Newton cannot converge on the NIC's algebraic loop
+*  with uic, so the "ideal" level is OPAMP_GBW with GBW = 1 GHz, see chua_spice.py.)
+*
+* OPAMP_GBW: single-pole op-amp, DC gain A0, unity-gain bandwidth GBW, output clamped at +/-VSAT
+* with anti-windup (internal node is clamped with a 1 S conductance beyond +/-VSAT).
+.subckt OPAMP_GBW inp inn vcc vee out params: A0=1e6 GBW=100e6 VSAT=7.666666667
+.param GM=1e-3
+G1 0 n1 inp inn {GM}
+R1 n1 0 {A0/GM}
+C1 n1 0 {GM/(6.283185307*GBW)}
+Bcl n1 0 I = (V(n1) > VSAT) ? (V(n1)-VSAT) : ((V(n1) < -VSAT) ? (V(n1)+VSAT) : 0)
+E1 out 0 n1 0 1
+.ends OPAMP_GBW

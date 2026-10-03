@@ -1,6 +1,6 @@
 # Math map — PDF hardware onto the FSOT pin
 
-Authority: [FSOT-2.1-Lean](https://github.com/dappalumbo91/FSOT-2.1-Lean) `vendor/fsot_compute.py` pin **D1D38A**. Zero free parameters.
+Authority: [FSOT-2.1-Lean](https://github.com/dappalumbo91/FSOT-2.1-Lean) `vendor/fsot_compute.py` pin **AEB2AD**. Zero free parameters.
 
 ## Engine
 
@@ -22,10 +22,10 @@ Mismatch rule: change \(D_{\mathrm{eff}}\) / domain, not a new coefficient.
 
 | Piece | Domain | \(D_{\mathrm{eff}}\) | Why |
 |-------|--------|---------------------:|-----|
-| Analog RLC / Chua / voltages | Electromagnetism | 9 | currents, fields, ADC rails |
-| Passives BOM (C dielectric, L core) | Materials_Science | 10 | catalog emergence panel |
-| Acoustic / Chladni / Faraday (PDF p.2) | Acoustics | 10 | nodal fields, later lab |
-| ESP32 platform rails | Electromagnetism (panel D=12 in Lean priors) | 9 live / 12 panel | `Esp32PlatformEngineeringPanelPriors` |
+| Analog RLC / Chua / voltages | Electromagnetism | 7 (nest, AEB2AD) | currents, fields, ADC rails; Branch L inductor loss |
+| Passives BOM (C dielectric, L core) | Materials_Science | 8 | catalog emergence panel (Branch L sensitivity: r0 18.42 Ω) |
+| Acoustic / Chladni / Faraday (PDF p.2) | Acoustics | 8 | nodal fields, later lab |
+| ESP32 platform rails | Electromagnetism (panel D=12 in Lean priors) | 7 live / 12 panel | `Esp32PlatformEngineeringPanelPriors` |
 
 S(Electromagnetism) is computed live from the pin. Do not hard-code it in new math; firmware may freeze the kernel constants.
 
@@ -49,7 +49,7 @@ FSOT-Quantum:
 \kappa_{ij} = A_{\mathrm{bleed}}\cdot\mathrm{POOF}\cdot\lvert S_i\rvert\lvert S_j\rvert\big/\bigl(1+\lvert D_i-D_j\rvert/25\bigr)
 \]
 
-Identical nodes: \(D_i=D_j=9\). Dimensionless Chua coupling:
+Identical nodes: \(D_i=D_j=7\). Dimensionless Chua coupling:
 
 \[
 \sigma = \alpha R / R_c,\qquad \alpha=C_2/C_1.
@@ -60,22 +60,26 @@ The 3% residual was a **wrong object**, not a missing coefficient.
 | Wrong (3%) | Right (gates `overall_ok`) |
 |------------|----------------------------|
 | 1-D chain (ends ≠ middle) | **Ring / triangle** — every node degree 2 |
-| Matsumoto \(a,b=-1.143,-0.714\) | **BOM NIC** \(G_a=-1/2.2\mathrm{k}-1/3.3\mathrm{k}\), \(G_b=-1/3.3\mathrm{k}\) |
+| Matsumoto \(a,b=-1.143,-0.714\) | **BOM NIC** \(G_a=-1/1320\), \(G_b=1/R_4-R_2/(R_1R_3)=-9/22000\) (2026-10-03 fix; was \(-1/3.3\mathrm{k}\)), outer \(G_c=101/22000\) |
 | `LOCK_ORDER = 0.85` | trit \(\ge \varphi^{-1}\), MAD/amp \(\le \varphi^{-4}\) (hardware working-set law) |
-| \(\sigma_c=\alpha/\varphi\) after the sweep | **Operating point \(\sigma=\varphi\)** a priori |
+| \(\sigma_c=\alpha/\varphi\) after the sweep | **\(\sigma_c=1.4897\)** from Branch L \(\gamma\) + master stability, locked before the sweep; \(\sigma=\varphi^2\) robust gate |
+| 80 τ window + `np.clip(±8)` | 2000 τ, no clip, lock requires no escape beyond \(B_{p2}\) |
+| ideal inductor (\(r_0=0\)) | Branch L \(r_0=\sqrt{(1+|S_{EM}|\alpha)^2-1}\sqrt{L/C_2}=18.44\,\Omega\), \(\gamma=0.15087\) |
 
-Gates (6 IC seeds):
+Gates (6 IC seeds, 2000 τ, amplitude-checked):
 
 | \(\sigma\) | \(R_c\) | lock rate |
 |-----------:|--------:|----------:|
 | 0 | open | 0 |
-| 1 | 18.0 kΩ | 0 |
-| \(\varphi\) | **11.12461 kΩ** | **1** |
-| \(\varphi^2\) | 6.875 kΩ | 1 |
+| 0.9 | 20.0 kΩ | 0 (escaped) |
+| 1 | 18.0 kΩ | 0 (escaped) |
+| 1.525 | 11.80 kΩ | 1 (sweep threshold; predicted 1.4897) |
+| \(\varphi\) | 11.12461 kΩ | 1 (demoted) |
+| \(\varphi^2\) | **6.875 kΩ** | **1** (robust gate) |
 
-BOM catalog residual at Electromagnetism (\(f=0.0004\)): **0.0208%**.
+BOM catalog residual at Electromagnetism (\(f=0.0004\)): **0.0382%** (AEB2AD).
 
-Build the triangle with three pots DMM-set to 11.12 kΩ. That is the experiment.
+Build the triangle; test 20 kΩ (no lock), 6.88 kΩ (lock), and sweep for the 12.08 kΩ threshold. That is the experiment.
 
 ## Applied-repo pattern this lab copies
 
@@ -89,7 +93,7 @@ Build the triangle with three pots DMM-set to 11.12 kΩ. That is the experiment.
 
 ## Kill criteria
 
-1. Pin SHA-256 of `fsot_compute.py` does not start with `D1D38A`.
+1. Pin SHA-256 of `fsot_compute.py` does not start with `AEB2AD`.
 2. Linear \(f_{\mathrm{LC}}\) not in 1–10 kHz (ESP32 ADC envelope).
 3. Biased \(V_{C1}\) leaves 0–3.3 V.
 4. \(\sigma=0\) trajectory is not chaotic (no double-scroll amplitude).

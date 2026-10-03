@@ -1,29 +1,56 @@
-edition_id: fsot-circuit-v0.1
+edition_id: fsot-circuit-v0.2-aeb2ad-long-window
 application: FSOT-Circuit
 author: Damian Arthur Palumbo
 license: Apache-2.0
-pin_prefix: D1D38A
-pin_sha256: D1D38A185487B452E470AC68ECE2EB45AEB1CA9CE25FC9BF9564C19633FFBE70
+pin_prefix: AEB2AD
+pin_sha256: AEB2ADAD6E80F487772C5DF90A2E3DDA71624AB831A6A83B94AB471AC9AAC170
+previous_pin_prefix: D1D38A
 hub_source: https://github.com/dappalumbo91/FSOT-2.1-Lean
 inherits_hub_overall_ok: false
 free_parameters: 0
 domain: Electromagnetism
-D_eff: 9
-operating_point:
-  formula: "sigma = phi; R_c = alpha * R / phi"
-  sigma: 1.618033988749895
-  R_c_ohm: 11124.611797498106
-  topology: ring
+D_eff: 7
+S_EM: 0.9557285700955828
+scalar_trit: 1
+integration:
+  t_end_tau: 2000
+  tail_tau: 500
+  dt: 0.005
+  clip: none
+  lock_requires_no_escape: true   # tail max|x| < x2 = Bp2/Bp = 230/33
 nic:
   Ga: -1/1320
-  Gb: -1/3300
+  Gb: -9/22000      # was -1/3300 (wrong)
+  Gc: 101/22000     # outer segment, new
   a: -15/11
-  b: -6/11
+  b: -81/110        # was -6/11
+  c: 909/110
+  Esat_V: 23/3      # Bp1 = 1 V
+  Bp2_V: 230/33
+branch_l:
+  law: "r0 = sqrt((1+|S_EM|*ALPHA)^2 - 1) * sqrt(L/C2); gamma = beta*r0/R"
+  r0_ohm: 18.44004975928614
+  gamma: 0.1508731343941593
+  Q_L: 25.43602550454835
+sharp_prediction:
+  sigma_c: 1.4897
+  tolerance: 0.05
+  R_c_crit_ohm: 12082.97
+  locked_sha256:
+    - 04ebe3f4e2f96eb546d494b76169d456d883635631e4ac89cf9307a302b4f6f1
+    - d6bd17be0bf24ba5c8c7a40ea4471c72295a03886e9769bcd8d28eb9a44a4cdd
+robust_gate:
+  sigma: 2.618033988749895
+  R_c_ohm: 6875.388202501893
+demoted:
+  sigma_phi: "consequence of sigma_c < phi; not a stand-alone claim"
 gates:
   open_lock_rate: 0.0
-  below_phi_lock_rate: 0.0
-  phi_lock_rate: 1.0
+  sigma1_lock_rate: 0.0
+  rc20k_lock_rate: 0.0
   phi_sq_lock_rate: 1.0
-  bom_median_error_pct: 0.0208
+  phi_lock_rate: 1.0
+  sigma_c_sweep: 1.525
+  bom_median_error_pct: 0.0382
   green_gate_pct: 0.5
 reproduction: python verification/run_cross_proof.py

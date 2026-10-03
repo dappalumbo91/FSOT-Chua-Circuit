@@ -1,25 +1,29 @@
-"""3-node Chua ring — BOM NIC slopes, identical-node coupling.
+"""3-node Chua ring: Kennedy NIC slopes from the BOM, 3-segment nonlinearity, lossy inductor (FSOT Branch L).
 
-Wrong objects (the 3% residual):
-  - 1-D chain (ends are not identical; FSOT κ assumes the same D / degree)
-  - Matsumoto fitted a,b = −1.143/−0.714
-  - LOCK_ORDER = 0.85 (a free cut)
-  - σ_c = α/φ picked after the sweep
+Corrections in branch fix/aeb2ad-long-window (2026-10-03):
+  - b was -R/R6 = -6/11 (wrong). The Kennedy NIC gives Gb = 1/R4 - R2/(R1 R3) = -9/22000 S,
+    so b = R*Gb = -81/110. Ga = -R2/(R1 R3) - R5/(R4 R6) = -1/1320 S (a = -15/11, unchanged).
+  - The outer segment is modelled: beyond Bp2 (the second op-amp saturates) the slope is
+    Gc = 1/R1 + 1/R4 = +101/22000 S (c = +909/110). Esat is chosen so that Bp1 = 1 V, giving
+    x2 = Bp2/Bp = 6.97.
+  - np.clip(+-8) is removed. It hid the divergence of the 2-segment model and made 80 tau
+    look locked. Integration now runs a long window (2000 tau) and tracks escape:
+    a node that crosses x2 has left the double scroll for the outer limit cycle.
+  - Lock requires no escape (tail max|x| < x2). Without that, rings that synchronise on the
+    outer +-7.35 V cycle read as LOCK.
+  - Inductor loss gamma = beta r0/R with r0 from FSOT 2.1 Branch L (docs/BRANCH_L_DERIVATION.md).
 
-Right objects:
-  - ring / triangle (every node degree 2)
-  - Ga, Gb from the Kennedy NIC resistors on the BOM
-  - lock when MAD/amp ≤ φ^{-4} (hardware working-set law) and trit ≥ φ^{-1}
-  - operating point σ = φ,  R_c = α R / φ
+The lock law is otherwise unchanged: MAD <= amp_ref phi^-4, trit agreement >= phi^-1, amp >= amp_ref phi^-4, railed < 5 %.
 """
 
 from __future__ import annotations
 
 from dataclasses import dataclass
+from fractions import Fraction
 
 import numpy as np
 
-from .fsot_engine import PHI
+from .fsot_engine import PHI, branch_l
 
 PHI_F = float(PHI)
 PHI_INV = 1.0 / PHI_F
@@ -33,8 +37,14 @@ class PhysicalNode:
     C1_f: float = 10e-9
     C2_f: float = 100e-9
     Bp_v: float = 1.0
-    R_nic_a_ohm: float = 2200.0  # 2.2 kΩ NIC branch
-    R_nic_b_ohm: float = 3300.0  # 3.3 kΩ NIC branch
+    # Kennedy (1992) NIC pair, hardware/netlist.json
+    R1_ohm: int = 220
+    R2_ohm: int = 220
+    R3_ohm: int = 2200
+    R4_ohm: int = 22000
+    R5_ohm: int = 22000
+    R6_ohm: int = 3300
+    use_branch_l: bool = True  # r0 from FSOT Branch L; False -> ideal inductor (r0 = 0)
 
     @property
     def alpha(self) -> float:
@@ -52,13 +62,30 @@ class PhysicalNode:
     def f_lc_hz(self) -> float:
         return 1.0 / (2.0 * np.pi * np.sqrt(self.L_h * self.C2_f))
 
+    # exact conductances (siemens) as fractions
+    @property
+    def Ga_exact(self) -> Fraction:
+        return -Fraction(self.R2_ohm, self.R1_ohm * self.R3_ohm) - Fraction(self.R5_ohm, self.R4_ohm * self.R6_ohm)
+
+    @property
+    def Gb_exact(self) -> Fraction:
+        return -Fraction(self.R2_ohm, self.R1_ohm * self.R3_ohm) + Fraction(1, self.R4_ohm)
+
+    @property
+    def Gc_exact(self) -> Fraction:
+        return Fraction(1, self.R1_ohm) + Fraction(1, self.R4_ohm)
+
     @property
     def Ga(self) -> float:
-        return -(1.0 / self.R_nic_a_ohm + 1.0 / self.R_nic_b_ohm)
+        return float(self.Ga_exact)
 
     @property
     def Gb(self) -> float:
-        return -1.0 / self.R_nic_b_ohm
+        return float(self.Gb_exact)
+
+    @property
+    def Gc(self) -> float:
+        return float(self.Gc_exact)
 
     @property
     def a_dimless(self) -> float:
@@ -69,12 +96,33 @@ class PhysicalNode:
         return self.R_ohm * self.Gb
 
     @property
-    def sigma_phi(self) -> float:
-        return PHI_F
+    def c_dimless(self) -> float:
+        return self.R_ohm * self.Gc
 
     @property
-    def R_c_phi_ohm(self) -> float:
-        return self.rc_from_sigma(PHI_F)
+    def esat_v(self) -> float:
+        """Op-amp saturation that puts Bp1 = Esat R6/(R5+R6) at Bp_v."""
+        return self.Bp_v * (self.R5_ohm + self.R6_ohm) / self.R6_ohm
+
+    @property
+    def bp2_v(self) -> float:
+        return self.esat_v * self.R3_ohm / (self.R2_ohm + self.R3_ohm)
+
+    @property
+    def x2(self) -> float:
+        return self.bp2_v / self.Bp_v
+
+    @property
+    def branch_l(self) -> dict:
+        return branch_l(self.L_h, self.C2_f, self.R_ohm)
+
+    @property
+    def r0_ohm(self) -> float:
+        return self.branch_l["r0_ohm"] if self.use_branch_l else 0.0
+
+    @property
+    def gamma(self) -> float:
+        return self.beta * self.r0_ohm / self.R_ohm
 
     def sigma_from_rc(self, R_c_ohm: float) -> float:
         return self.alpha * self.R_ohm / max(R_c_ohm, 1e-9)
@@ -82,92 +130,118 @@ class PhysicalNode:
     def rc_from_sigma(self, sigma: float) -> float:
         return self.alpha * self.R_ohm / max(sigma, 1e-12)
 
+    @property
+    def R_c_phi_ohm(self) -> float:
+        return self.rc_from_sigma(PHI_F)
 
-def chua_h(x: np.ndarray, a: float, b: float) -> np.ndarray:
-    return b * x + 0.5 * (a - b) * (np.abs(x + 1.0) - np.abs(x - 1.0))
+
+def chua_h(x: np.ndarray, a: float, b: float, c: float, x2: float) -> np.ndarray:
+    return c * x + 0.5 * (a - b) * (np.abs(x + 1.0) - np.abs(x - 1.0)) + 0.5 * (b - c) * (np.abs(x + x2) - np.abs(x - x2))
 
 
-def rhs_ring(state: np.ndarray, alpha: float, beta: float, sigma: float, a: float, b: float) -> np.ndarray:
-    out = np.empty_like(state)
-    xs, ys, zs = state[0::3], state[1::3], state[2::3]
-    h = chua_h(xs, a, b)
-    couple = np.roll(xs, 1) + np.roll(xs, -1) - 2.0 * xs
-    out[0::3] = alpha * (ys - xs - h) + sigma * couple
-    out[1::3] = xs - ys + zs
-    out[2::3] = -beta * ys
+def rhs_ring(s: np.ndarray, sigma: np.ndarray, p: tuple) -> np.ndarray:
+    """s has shape (batch, n_nodes, 3); sigma has shape (batch, 1)."""
+    alpha, beta, gamma, a, b, c, x2 = p
+    x, y, z = s[..., 0], s[..., 1], s[..., 2]
+    couple = np.roll(x, 1, axis=1) + np.roll(x, -1, axis=1) - 2.0 * x if x.shape[1] > 1 else 0.0 * x
+    out = np.empty_like(s)
+    out[..., 0] = alpha * (y - x - chua_h(x, a, b, c, x2)) + sigma * couple
+    out[..., 1] = x - y + z
+    out[..., 2] = -beta * y - gamma * z
     return out
 
 
-def rk4_traj(
-    n_nodes: int = 3,
-    sigma: float = 0.0,
-    t_end: float = 80.0,
-    dt: float = 0.008,
-    seed: int = 2,
-    phys: PhysicalNode | None = None,
-) -> dict:
-    phys = phys or PhysicalNode()
-    a, b = phys.a_dimless, phys.b_dimless
+def initial_state(n_nodes: int, seed: int) -> np.ndarray:
     rng = np.random.default_rng(seed)
-    s = np.zeros(3 * n_nodes)
+    s = np.zeros((n_nodes, 3))
     for i in range(n_nodes):
-        s[3 * i] = 0.1 + 0.05 * i + 0.01 * rng.normal()
-        s[3 * i + 1] = 0.02 * rng.normal()
-    n_steps = int(t_end / dt)
-    xs = np.empty((n_steps, n_nodes))
-    blew = False
-    alpha, beta = phys.alpha, phys.beta
-    for k in range(n_steps):
-        xs[k] = s[0::3]
-        k1 = rhs_ring(s, alpha, beta, sigma, a, b)
-        k2 = rhs_ring(s + 0.5 * dt * k1, alpha, beta, sigma, a, b)
-        k3 = rhs_ring(s + 0.5 * dt * k2, alpha, beta, sigma, a, b)
-        k4 = rhs_ring(s + dt * k3, alpha, beta, sigma, a, b)
-        s = s + (dt / 6.0) * (k1 + 2 * k2 + 2 * k3 + k4)
-        np.clip(s, -8.0, 8.0, out=s)
-        if not np.all(np.isfinite(s)):
-            blew = True
-            xs[k:] = np.nan
-            break
-    return {
-        "t": np.arange(n_steps) * dt,
-        "x": xs,
-        "dt": dt,
-        "sigma": sigma,
-        "alpha": alpha,
-        "beta": beta,
-        "a": a,
-        "b": b,
-        "tau_s": phys.tau_s,
-        "f_lc_hz": phys.f_lc_hz,
-        "phys": phys,
-        "blew_up": blew,
-    }
+        s[i, 0] = 0.1 + 0.05 * i + 0.01 * rng.normal()
+        s[i, 1] = 0.02 * rng.normal()
+    return s
 
 
-def order_parameter(x_tail: np.ndarray) -> float:
-    n = x_tail.shape[1]
-    if n < 2:
-        return 1.0
-    corrs = []
-    for i in range(n):
-        for j in range(i + 1, n):
-            aa = x_tail[:, i] - x_tail[:, i].mean()
-            bb = x_tail[:, j] - x_tail[:, j].mean()
-            denom = np.linalg.norm(aa) * np.linalg.norm(bb)
-            corrs.append(0.0 if denom == 0 else float(np.dot(aa, bb) / denom))
-    return float(np.mean(np.abs(corrs)))
+def run_batch(
+    sigmas,
+    seeds,
+    n_nodes: int = 3,
+    t_end: float = 2000.0,
+    tail_tau: float = 500.0,
+    dt: float = 0.005,
+    phys: PhysicalNode | None = None,
+    amp_ref: float | None = None,
+    keep_tail: bool = False,
+) -> list[dict]:
+    """Integrate every (sigma, seed) pair at once (RK4, no clipping); online tail statistics.
+
+    Returns one dict per (sigma, seed): amp, mad, trit, railed, tail_maxabs, t_escape (tau, or None),
+    lobe_switches (node 0, tail), and locked (if amp_ref is given).
+    """
+    phys = phys or PhysicalNode()
+    p = (phys.alpha, phys.beta, phys.gamma, phys.a_dimless, phys.b_dimless, phys.c_dimless, phys.x2)
+    pairs = [(float(sg), int(sd)) for sg in sigmas for sd in seeds]
+    B = len(pairs)
+    s = np.stack([initial_state(n_nodes, sd) for _, sd in pairs])
+    sig = np.array([sg for sg, _ in pairs])[:, None]
+    n = int(round(t_end / dt))
+    t0 = n - int(round(tail_tau / dt))
+    x2 = phys.x2
+    sx = np.zeros((B, n_nodes)); sxx = np.zeros((B, n_nodes))
+    mad = np.zeros(B); agree = np.zeros(B); rail = np.zeros(B); mx = np.zeros(B)
+    t_esc = np.full(B, np.nan); sw = np.zeros(B); lobe = np.zeros(B)
+    tail = [] if keep_tail else None
+    cnt = 0
+    for k in range(n):
+        x = s[..., 0]
+        ax = np.abs(x)
+        esc_now = np.isnan(t_esc) & ((ax > x2).any(axis=1) | ~np.isfinite(x).all(axis=1))
+        t_esc[esc_now] = k * dt
+        if k >= t0:
+            cnt += 1
+            sx += x; sxx += x * x
+            mx = np.maximum(mx, ax.max(axis=1))
+            rail += (ax > 7.5).sum(axis=1)
+            tr = np.where(x < -1.0, -1, np.where(x > 1.0, 1, 0))
+            agree += (tr == tr[:, :1]).all(axis=1)
+            if n_nodes > 1:
+                d = np.abs(x[:, :, None] - x[:, None, :])
+                iu = np.triu_indices(n_nodes, 1)
+                mad += d[:, iu[0], iu[1]].mean(axis=1)
+            l0 = np.where(x[:, 0] > 1.0, 1.0, np.where(x[:, 0] < -1.0, -1.0, lobe))
+            sw += (lobe != 0) & (l0 != lobe)
+            lobe = l0
+            if keep_tail:
+                tail.append(x.copy())
+        k1 = rhs_ring(s, sig, p)
+        k2 = rhs_ring(s + 0.5 * dt * k1, sig, p)
+        k3 = rhs_ring(s + 0.5 * dt * k2, sig, p)
+        k4 = rhs_ring(s + dt * k3, sig, p)
+        s = s + (dt / 6.0) * (k1 + 2.0 * k2 + 2.0 * k3 + k4)
+    mean = sx / cnt
+    amp = np.sqrt(np.maximum(sxx / cnt - mean * mean, 0.0)).mean(axis=1)
+    out = []
+    for i, (sg, sd) in enumerate(pairs):
+        r = {
+            "sigma": sg, "seed": sd,
+            "finite": bool(np.isfinite(amp[i])),
+            "amp": float(amp[i]), "mad": float(mad[i] / cnt), "trit": float(agree[i] / cnt),
+            "railed_frac": float(rail[i] / (n_nodes * cnt)), "tail_maxabs": float(mx[i]),
+            "t_escape_tau": None if np.isnan(t_esc[i]) else float(t_esc[i]),
+            "escaped_in_tail": bool(mx[i] >= x2), "lobe_switches_tail": int(sw[i]),
+        }
+        if amp_ref is not None:
+            r.update(lock_law(r, amp_ref, x2))
+        if keep_tail:
+            r["tail_x"] = np.array([t[i] for t in tail])
+        out.append(r)
+    return out
 
 
-def mean_abs_diff(x_tail: np.ndarray) -> float:
-    n = x_tail.shape[1]
-    diffs = [float(np.mean(np.abs(x_tail[:, i] - x_tail[:, j]))) for i in range(n) for j in range(i + 1, n)]
-    return float(np.mean(diffs)) if diffs else 0.0
-
-
-def trit_agreement(x_tail: np.ndarray, breakpoint: float = 1.0) -> float:
-    trits = np.where(x_tail < -breakpoint, -1, np.where(x_tail > breakpoint, 1, 0))
-    return float(np.mean(np.all(trits == trits[:, :1], axis=1)))
+def lock_law(r: dict, amp_ref: float, x2: float) -> dict:
+    cut = amp_ref * PHI_INV4
+    sync = r["finite"] and r["mad"] <= cut and r["trit"] >= PHI_INV and r["amp"] >= cut and r["railed_frac"] < 0.05
+    amplitude_ok = r["finite"] and r["tail_maxabs"] < x2
+    return {"mad_cut": cut, "trit_cut": PHI_INV, "synchronised": bool(sync), "amplitude_ok": bool(amplitude_ok),
+            "locked": bool(sync and amplitude_ok)}
 
 
 def dominant_freq_hz(x: np.ndarray, dt_dimless: float, tau_s: float) -> float:
@@ -176,31 +250,3 @@ def dominant_freq_hz(x: np.ndarray, dt_dimless: float, tau_s: float) -> float:
     freqs = np.fft.rfftfreq(len(sig), d=dt_dimless * tau_s)
     spec[0] = 0.0
     return float(freqs[int(np.argmax(spec))])
-
-
-def seed_locked(xt: np.ndarray, amp_ref: float) -> dict:
-    finite = bool(np.all(np.isfinite(xt)))
-    if not finite or amp_ref <= 0:
-        return {"locked": False, "finite": False}
-    amp = float(np.mean([np.std(xt[:, i]) for i in range(xt.shape[1])]))
-    mad = mean_abs_diff(xt)
-    trit = trit_agreement(xt)
-    order = order_parameter(xt)
-    railed = float(np.mean(np.abs(xt) > 7.5))
-    locked = (
-        mad <= amp_ref * PHI_INV4
-        and trit >= PHI_INV
-        and amp >= amp_ref * PHI_INV4
-        and railed < 0.05
-    )
-    return {
-        "locked": bool(locked),
-        "finite": True,
-        "amp": amp,
-        "mad": mad,
-        "mad_cut": amp_ref * PHI_INV4,
-        "trit": trit,
-        "trit_cut": PHI_INV,
-        "order": order,
-        "railed_frac": railed,
-    }

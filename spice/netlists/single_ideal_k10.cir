@@ -1,0 +1,22 @@
+* single_ideal_k10: nodes=1 Rc=None k=10 r0=0.0 opamp=ideal rails=+/-9.0
+.include models/chua_node.lib
+.include models/opamp_beh.lib
+.subckt OPA inp inn vcc vee out
+X inp inn vcc vee out OPAMP_GBW GBW=1e+09
+.ends OPA
+Vcc vcc 0 9.0
+Vee vee 0 -9.0
+Xa a1 a2 vcc vee CHUA_NODE k=10 r0=0
+.ic v(a1)=0.1 v(a2)=0
+.options method=gear reltol=1e-4 abstol=1e-10 vntol=1e-7 itl4=100
+.tran 1.8e-05 0.9 0 3.6e-06 uic
+.control
+set filetype=ascii
+run
+linearize v(a1) v(a2)
+set wr_singlescale
+set wr_vecnames
+wrdata out/single_ideal_k10.dat v(a1) v(a2)
+quit
+.endc
+.end

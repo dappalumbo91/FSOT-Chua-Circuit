@@ -1,0 +1,56 @@
+{
+ "chua_single_node": {
+  "nets_match": true,
+  "values_match": true,
+  "scope_xy_C1A_vs_C2A": true,
+  "n_elements": 44,
+  "n_nets": 7,
+  "diff": null,
+  "ctz_roundtrip_with_falstad_lzstring": true
+ },
+ "chua_ring_sigma_phi2": {
+  "nets_match": true,
+  "values_match": true,
+  "scope_xy_C1A_vs_C2A": true,
+  "n_elements": 141,
+  "n_nets": 19,
+  "diff": null,
+  "ctz_roundtrip_with_falstad_lzstring": true
+ },
+ "chua_ring_sigma_phi": {
+  "nets_match": true,
+  "values_match": true,
+  "scope_xy_C1A_vs_C2A": true,
+  "n_elements": 141,
+  "n_nets": 19,
+  "diff": null,
+  "ctz_roundtrip_with_falstad_lzstring": true
+ },
+ "chua_single_node_r0_18p44": {
+  "nets_match": true,
+  "values_match": true,
+  "scope_xy_C1A_vs_C2A": true,
+  "n_elements": 47,
+  "n_nets": 8,
+  "diff": null,
+  "ctz_roundtrip_with_falstad_lzstring": true
+ },
+ "chua_ring_sigma_phi2_r0_18p44": {
+  "nets_match": true,
+  "values_match": true,
+  "scope_xy_C1A_vs_C2A": true,
+  "n_elements": 150,
+  "n_nets": 22,
+  "diff": null,
+  "ctz_roundtrip_with_falstad_lzstring": true
+ },
+ "chua_ring_sigma_phi_r0_18p44": {
+  "nets_match": true,
+  "values_match": true,
+  "scope_xy_C1A_vs_C2A": true,
+  "n_elements": 150,
+  "n_nets": 22,
+  "diff": null,
+  "ctz_roundtrip_with_falstad_lzstring": true
+ }
+}

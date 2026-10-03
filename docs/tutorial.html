@@ -24,7 +24,7 @@
 </head>
 <body>
 <h1>FSOT 3-node Chua ring</h1>
-<p>Afternoon breadboard. Three identical analog oscillators in a <strong>triangle</strong>. Coupling pots at <strong>11.12 kΩ</strong> must lock. At 20 kΩ they must not. Pin D1D38A. Zero free parameters.</p>
+<p>Afternoon breadboard. Three identical analog oscillators in a <strong>triangle</strong>. Coupling pots at <strong>6.88 kΩ</strong> (σ = φ²) must lock, at 20 kΩ they must not, and lock must first appear near <strong>12.08 kΩ</strong> (σ<sub>c</sub> = 1.4897). Pin AEB2AD. Zero free parameters.</p>
 
 <figure>
   <img class="photo" src="images/bench_triangle_overview.jpg" alt="Breadboard with three analog islands and an ESP32"/>
@@ -34,7 +34,7 @@
 <h2>1. Why this is the experiment</h2>
 <p>FSOT trits are (−1, 0, +1). A Chua node’s voltage already occupies three regions around ±1 V. The ESP32 12-bit ADC is the observer. The prediction is not a fitted onset: it is the golden-ratio operating point of three identical nodes on a closed loop.</p>
 <div class="card">
-  σ = φ &nbsp;&nbsp;→&nbsp;&nbsp; R<sub>c</sub> = α R / φ = 10 × 1800 / φ = <strong>11124.61 Ω</strong>
+  σ<sub>c</sub> = 1.4897 &nbsp;→&nbsp; R<sub>c</sub>* = α R / σ<sub>c</sub> = <strong>12.08 kΩ</strong> &nbsp;&nbsp;|&nbsp;&nbsp; σ = φ² &nbsp;→&nbsp; R<sub>c</sub> = 10 × 1800 / φ² = <strong>6875.39 Ω</strong>
 </div>
 <p>Set all three pots there with a DMM. That is the lock test.</p>
 
@@ -62,9 +62,9 @@
   <tr><td>3</td><td>2.2 kΩ</td><td>NIC inner branch (Ga)</td></tr>
   <tr><td>3</td><td>3.3 kΩ</td><td>NIC outer branch (Gb)</td></tr>
   <tr><td>6</td><td>22 kΩ</td><td>NIC R4, R5</td></tr>
-  <tr><td>6</td><td>100 kΩ 1%</td><td>1.65 V bias into the ESP32</td></tr>
+  <tr><td>3+3+3</td><td>300 kΩ, 100 kΩ, 150 kΩ 1%</td><td>ADC bias: v = 1.65 + V<sub>C1</sub>/6</td></tr>
   <tr><td>6</td><td>1N4148</td><td>Clamp GPIO to 3V3 and GND</td></tr>
-  <tr><td>3</td><td>20 kΩ linear pot</td><td>Triangle coupling. DMM-set to 11.12 kΩ</td></tr>
+  <tr><td>3</td><td>20 kΩ linear pot</td><td>Triangle coupling. DMM-set to 20 kΩ, 6.88 kΩ, then sweep 13 → 11 kΩ</td></tr>
   <tr><td>2</td><td>9 V battery</td><td>Analog rails only</td></tr>
 </table>
 
@@ -99,9 +99,9 @@
   <text x="320" y="45" text-anchor="middle" font-size="14">A</text>
   <text x="520" y="255" text-anchor="middle" font-size="14">B</text>
   <text x="120" y="255" text-anchor="middle" font-size="14">C</text>
-  <text x="430" y="130" font-size="13">Rc AB 11.12 kΩ</text>
-  <text x="280" y="270" font-size="13">Rc BC 11.12 kΩ</text>
-  <text x="150" y="130" font-size="13">Rc CA 11.12 kΩ</text>
+  <text x="430" y="130" font-size="13">Rc AB</text>
+  <text x="280" y="270" font-size="13">Rc BC</text>
+  <text x="150" y="130" font-size="13">Rc CA</text>
   <text x="320" y="160" text-anchor="middle" font-size="14">identical nodes, degree 2</text>
 </svg>
 <p>Bias per node (the only ESP32 interface):</p>
@@ -109,7 +109,7 @@
               +-- 100k to GND
               +-- 100k to 3V3
               + 1N4148 to 3V3 and to GND</pre>
-<p>v<sub>ADC</sub> = 1.65 + 0.5 × V<sub>C1</sub>. A ±2 V swing stays in 0.65–2.65 V.</p>
+<p>v<sub>ADC</sub> = 1.65 + V<sub>C1</sub>/6 (300 k series, 100 k to 3V3, 150 k to GND). Double scroll ±4.33 V → 0.93–2.37 V; outer-cycle escape ±7.35 V → 0.43–2.88 V.</p>
 
 <h2>6. Build order</h2>
 <ol>
@@ -119,16 +119,17 @@
   <li>Bias networks. USB-power the ESP32. DMM each ADC node ≈ 1.65 V.</li>
   <li>Flash firmware. Confirm <code>FSOT_RLC_HARDWARE_BOOT=ok</code>.</li>
   <li>Then connect 9 V. If the DevKit resets, a clamp is missing — disconnect.</li>
-  <li>DMM pots to 11.12 kΩ. Watch UART.</li>
+  <li>DMM pots to 20 kΩ, then 6.88 kΩ, then sweep 13 → 11 kΩ. Watch UART.</li>
 </ol>
 
 <h2>7. The two tests</h2>
 <table>
   <tr><th>Test</th><th>Pots</th><th>Must see</th></tr>
-  <tr><td>Unlocked</td><td>20 kΩ (σ ≈ 0.9 &lt; φ)</td><td class="bad">FSOT_RLC_LOCK=0, trits mix</td></tr>
-  <tr><td>Locked</td><td><strong>11.12 kΩ</strong> (σ = φ)</td><td class="ok">FSOT_RLC_LOCK=1, three trits equal</td></tr>
+  <tr><td>Unlocked</td><td>20 kΩ (σ = 0.9 &lt; σ<sub>c</sub>)</td><td class="bad">FSOT_RLC_LOCK=0, AMP_OK=0 (escaped to the outer cycle; trits may agree there)</td></tr>
+  <tr><td>Locked</td><td><strong>6.88 kΩ</strong> (σ = φ²)</td><td class="ok">FSOT_RLC_LOCK=1, AMP_OK=1, three trits equal</td></tr>
+  <tr><td>Threshold</td><td>13 → 11 kΩ</td><td>LOCK first appears near 12.08 kΩ (11.70–12.50)</td></tr>
 </table>
-<p>You do not tune a pot until a residual vanishes. The prediction is the 11.12 kΩ setting.</p>
+<p>You do not tune a pot until a residual vanishes. The predictions are the 12.08 kΩ threshold and the 6.88 kΩ lock.</p>
 
 <h2>8. Cross-verify</h2>
 <pre>python -m sim.run_sim

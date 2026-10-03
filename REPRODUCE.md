@@ -28,4 +28,4 @@ Missing optional Isabelle is SKIP, not FAIL. Missing a **required** tool is FAIL
 
 ## Pin
 
-`vendor/fsot_compute.py` must hash to prefix **D1D38A**. File is marked `-text` in `.gitattributes` so Git does not CRLF-break the pin.
+`vendor/fsot_compute.py` must hash to prefix **AEB2AD**. File is marked `-text` in `.gitattributes` so Git does not CRLF-break the pin.

@@ -1,0 +1,6 @@
+# msf5 e1=0.0102445 e2=0.0102445 SRn=1e+30 gamma=0.16363636 g1p=0 g2p=0 dt=0.00256112 T=3000
+ic=0 sigc=nan lam1=0.00000 maxabs=2.4828 frot_per_tau=0.00000 lobes_per100tau=0.000 frac_inner=0.0000
+ic=1 sigc=nan lam1=0.00000 maxabs=2.4828 frot_per_tau=0.00000 lobes_per100tau=0.000 frac_inner=0.0000
+ic=2 sigc=nan lam1=0.00000 maxabs=2.4828 frot_per_tau=0.00000 lobes_per100tau=0.000 frac_inner=0.0000
+ic=3 sigc=nan lam1=0.00000 maxabs=2.4828 frot_per_tau=0.00000 lobes_per100tau=0.000 frac_inner=0.0000
+#mean sigc=-nan sd=0.00000 n=0

@@ -1,9 +1,9 @@
 {
-  "pin": "D1D38A185487",
-  "S_EM": 0.5188655207983146,
-  "theta": 0.9174663774653723,
+  "pin": "AEB2ADAD6E80",
+  "S_EM": 0.9557285700955828,
+  "theta": 0.9175102712064876,
   "R_c_phi_ohm": 11124.611797498106,
-  "obligation_count": 13,
+  "obligation_count": 19,
   "fail_count": 0,
   "overall_ok": true,
   "obligations": [
@@ -11,7 +11,7 @@
       "id": "pin_prefix",
       "layer": "A",
       "ok": true,
-      "detail": "D1D38A185487"
+      "detail": "AEB2ADAD6E80"
     },
     {
       "id": "zero_free_params",
@@ -42,8 +42,8 @@
       "layer": "C",
       "ok": true,
       "detail": {
-        "python": 0.9174663774653723,
-        "rust": 0.9174663774653723
+        "python": 0.9175102712064876,
+        "rust": 0.9175102712064875
       }
     },
     {
@@ -52,52 +52,74 @@
       "ok": true,
       "detail": {
         "python": 1.618033988749895,
-        "rust": 1.6180339887
+        "rust": 1.618033988749895
       }
+    },
+    {
+      "id": "em_D_eff_rust_parity",
+      "layer": "C",
+      "ok": true,
+      "detail": 7.0
     },
     {
       "id": "sim_overall_ok",
       "layer": "B",
       "ok": true,
       "detail": {
-        "pin_D1D38A": true,
+        "pin_AEB2AD": true,
         "audio_band": true,
         "chaos_ok": true,
         "open_unlocked": true,
-        "below_phi_unlocked": true,
-        "phi_locked": true,
+        "sigma1_unlocked": true,
+        "rc20k_unlocked": true,
         "phi_sq_locked": true,
+        "sigma_c_sharp": true,
+        "sigma_c_python_crosscheck": true,
+        "phi_consistent_with_sigma_c": true,
         "bom_catalog_green": true,
         "adc_in_rail": true,
+        "adc_sees_escape": true,
         "free_parameters": 0,
         "overall_ok": true
       }
     },
     {
-      "id": "phi_locked",
+      "id": "phi_sq_locked",
       "layer": "B",
       "ok": true,
       "detail": {
-        "open": {
-          "sigma": 0.0,
-          "lock_rate": 0.0
-        },
-        "below_phi": {
-          "sigma": 1.0,
-          "lock_rate": 0.0,
-          "R_c_ohm": 18000.0
-        },
-        "phi": {
-          "sigma": 1.618033988749895,
-          "lock_rate": 1.0,
-          "R_c_ohm": 11124.611797498106
-        },
-        "phi_sq": {
-          "sigma": 2.618033988749895,
-          "lock_rate": 1.0,
-          "R_c_ohm": 6875.388202501893
-        }
+        "0.000000": 0.0,
+        "0.900000": 0.0,
+        "1.000000": 0.0,
+        "1.400000": 0.0,
+        "1.425000": 0.0,
+        "1.450000": 0.0,
+        "1.475000": 0.16666666666666666,
+        "1.500000": 0.3333333333333333,
+        "1.525000": 1.0,
+        "1.550000": 1.0,
+        "1.575000": 1.0,
+        "1.600000": 1.0,
+        "1.618034": 1.0,
+        "1.625000": 1.0,
+        "1.650000": 1.0,
+        "2.618034": 1.0
       }
+    },
+    {
+      "id": "sigma_c_sharp",
+      "layer": "B",
+      "ok": true,
+      "detail": {
+        "predicted": 1.4897,
+        "sweep": 1.525
+      }
+    },
+    {
+      "id": "phi_consistent_with_sigma_c",
+      "layer": "B",
+      "ok": true,
+      "detail": null
     },
     {
       "id": "open_unlocked",
@@ -106,10 +128,41 @@
       "detail": null
     },
     {
+      "id": "sigma1_unlocked",
+      "layer": "B",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "id": "rc20k_unlocked_amplitude_checked",
+      "layer": "B",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "id": "integration_long_window_no_clip",
+      "layer": "B",
+      "ok": true,
+      "detail": {
+        "t_end_tau": 2000.0,
+        "tail_tau": 500.0,
+        "dt": 0.005,
+        "clip": null,
+        "seeds": [
+          1,
+          2,
+          3,
+          5,
+          8,
+          13
+        ]
+      }
+    },
+    {
       "id": "bom_catalog_green",
       "layer": "B",
       "ok": true,
-      "detail": 0.02075462083193127
+      "detail": 0.03822914280382551
     },
     {
       "id": "smt_file",

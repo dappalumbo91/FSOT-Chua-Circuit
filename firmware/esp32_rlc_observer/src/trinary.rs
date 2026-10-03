@@ -43,8 +43,11 @@ pub fn from_scalar(s: f64) -> Trit {
     }
 }
 
-/// 12-bit ESP32 code → V_C1 after the 100 kΩ / 100 kΩ 1.65 V bias.
+/// 12-bit ESP32 code → V_C1 after the bias network Rs 300 kΩ (from V_C1), Rp 100 kΩ (to 3V3), Rg 150 kΩ (to GND):
+/// v_adc = 1.65 + V_C1 / 6  (sim/adc_model.py). The old 100k/100k/100k network gave 1.1 + V/3, not 1.65 + V/2.
+pub const ADC_MID_V: f64 = 1.65;
+pub const ADC_GAIN: f64 = 1.0 / 6.0;
 pub fn decode_vc1(code: u16) -> f64 {
     let volts = (code as f64) * 3.3 / 4095.0;
-    (volts - 1.65) / 0.5
+    (volts - ADC_MID_V) / ADC_GAIN
 }

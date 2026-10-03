@@ -1,19 +1,25 @@
 {
   "project": "FSOT 3-node nonlinear RLC array",
-  "pin": "D1D38A",
+  "pin": "AEB2AD",
   "domain": "Electromagnetism",
-  "D_eff": 9,
+  "D_eff": 7,
   "policy": "seed-derived E-series from PDF audio-band envelope + industry catalog IDs. No fitted R/L/C.",
   "node": {
     "topology": "Kennedy Chua (R, L, C1, C2, dual-op-amp NR)",
     "R_ohm": 1800,
     "L_h": 0.022,
-    "C1_f": 1e-8,
-    "C2_f": 1e-7,
+    "C1_f": 1e-08,
+    "C2_f": 1e-07,
     "alpha": 10.0,
     "beta_formula": "R^2 C2 / L",
     "Bp_v": 1.0,
-    "f_lc_hz_formula": "1/(2 pi sqrt(L C2))"
+    "f_lc_hz_formula": "1/(2 pi sqrt(L C2))",
+    "inductor_loss": {
+      "law": "FSOT 2.1 Branch L",
+      "r0_ohm": 18.44004975928614,
+      "Q_L": 25.43602550454835,
+      "gamma": 0.1508731343941593
+    }
   },
   "nic_per_node": {
     "R1_ohm": 220,
@@ -22,25 +28,47 @@
     "R4_ohm": 22000,
     "R5_ohm": 22000,
     "R6_ohm": 3300,
-    "note": "PDF envelope 220 ohm to 20 kOhm. Kennedy dual-op-amp negative-resistance network."
+    "note": "PDF envelope 220 ohm to 20 kOhm. Kennedy dual-op-amp negative-resistance network.",
+    "slopes_S": {
+      "Ga": "-1/1320",
+      "Gb": "-9/22000",
+      "Gc": "101/22000"
+    },
+    "Esat_v_for_Bp1_1V": "23/3",
+    "Bp2_v": "230/33"
   },
   "coupling": {
     "type": "3-node ring / triangle (identical degree 2)",
     "pot_ohm": 20000,
-    "set_ohm": 11124.61,
-    "formula": "R_c = alpha * R / phi",
     "nodes": 3,
-    "sigma_formula": "alpha * R / R_c"
+    "sigma_formula": "alpha * R / R_c",
+    "set_ohm_robust_lock": 6875.39,
+    "formula_robust": "R_c = alpha * R / phi^2",
+    "threshold_ohm": 12082.97,
+    "sigma_c": 1.4897,
+    "unlocked_test_ohm": 20000
   },
   "esp32_front_end": {
     "mcu": "MCU_ESP32_WROOM32",
     "adc_bits": 12,
     "vdd_v": 3.3,
-    "gpio": {"node0": 34, "node1": 35, "node2": 32},
-    "divider_r_ohm": 100000,
-    "map": "v_adc = 1.65 + 0.5 * V_C1",
-    "safe_vc1_v": [-2.0, 2.0],
-    "clamp": "D_1N4148 to 3V3 and GND"
+    "gpio": {
+      "node0": 34,
+      "node1": 35,
+      "node2": 32
+    },
+    "map": "v_adc = 1.65 + V_C1/6",
+    "safe_vc1_v": [
+      -9.9,
+      9.9
+    ],
+    "clamp": "D_1N4148 to 3V3 and GND",
+    "bias": {
+      "Rs_series_ohm": 300000,
+      "Rp_to_3v3_ohm": 100000,
+      "Rg_to_gnd_ohm": 150000
+    },
+    "lock_rule": "trit agreement >= 1/phi over 1024 samples AND max|V_C1| < 230/33 V"
   },
   "catalog_ids": [
     "R_1k_1pct",
