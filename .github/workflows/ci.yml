@@ -109,3 +109,51 @@ jobs:
           cmake -S error_budget -B error_budget/build -G Ninja -DCMAKE_BUILD_TYPE=Release
           cmake --build error_budget/build
           ./error_budget/build/mc point r=18.4400497592861384 T=3000
+
+  minimal-chaos:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install
+        run: sudo apt-get update && sudo apt-get install -y ngspice python3-numpy
+      - name: Build C++20 engines (mj ideal PWL jerk, oa full TL07x model)
+        working-directory: minimal
+        run: |
+          g++ -std=c++20 -O3 -pthread -o mj src/mj.cpp
+          g++ -std=c++20 -O3 -pthread -o oa src/oa.cpp
+          g++ -std=c++20 -O2 -o bd src/bd.cpp
+          g++ -std=c++20 -O2 -fopenmp -o proof/proof proof/proof.cpp
+          g++ -std=c++20 -O2 -o topo/tj topo/tj.cpp
+          g++ -std=c++20 -O2 -o topo/bpr topo/bpr.cpp
+          g++ -std=c++20 -O3 -fopenmp -o pathj/pj pathj/pj.cpp
+          g++ -std=c++20 -O3 -fopenmp -o pathc/pc pathc/pc.cpp
+      - name: "Interval proof replay (covering relation Na => Na at A = 1/phi)"
+        working-directory: minimal/proof
+        run: NSUB=256 ./proof check hsets.txt
+      - name: "Replay locks and key facts (hashes, lambda1 > 0, sum = -A, J1 unbounded)"
+        working-directory: minimal
+        run: |
+          python3 tools/check_minimal.py
+          python3 tools/verify_layout_pj.py
+          ./oa nic=2 T=500
+      - name: "ngspice smoke (ideal E-source op-amps, real 1N4148), R_A 2912.5 periodic and R_A 3150 chaotic"
+        working-directory: minimal/spice
+        run: |
+          mkdir -p netlists out
+          python3 mkcir.py 2912.5 ci_nom -0.5 ideal && python3 mkcir.py 3150 ci_3150 -0.5 ideal
+          ngspice -b netlists/ci_nom.cir > /dev/null && ngspice -b netlists/ci_3150.cir > /dev/null
+          python3 -c "import analyze as a; n=a.stats('ci_nom'); c=a.stats('ci_3150'); print(n, c); assert n['n_distinct_maxima'] <= 4 and c['n_distinct_maxima'] > 40"
+
+  horseshoe-proof:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - name: "Build interval horseshoe prover (C++20, OpenMP)"
+        working-directory: minimal/proof
+        run: g++ -std=c++20 -O2 -fopenmp -o horseshoe horseshoe.cpp
+      - name: "Replay covering relations at A = gamma_rel (P^4, h-sets in golden.txt)"
+        working-directory: minimal/proof
+        run: ./horseshoe check golden.txt
+

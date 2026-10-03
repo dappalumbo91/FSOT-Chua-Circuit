@@ -1,0 +1,38 @@
+{
+ "pj6_attr": {
+  "name": "pj6_attr",
+  "xmin": -1.3972705138623167,
+  "xmax": 0.8366197543224645,
+  "f_peak": 822.0,
+  "n_distinct_maxima": 110,
+  "n_maxima": 410,
+  "flatness": 0.02832183601610517
+ },
+ "pj7_default": {
+  "name": "pj7_default",
+  "xmin": -1.3970452349410134,
+  "xmax": 0.8366803622960303,
+  "f_peak": 818.0,
+  "n_distinct_maxima": 108,
+  "n_maxima": 410,
+  "flatness": 0.028014213783501208
+ },
+ "pjx_attr_e96": {
+  "name": "pjx_attr_e96",
+  "xmin": -1.3910293835696637,
+  "xmax": 0.8500860295045964,
+  "f_peak": 798.0,
+  "n_distinct_maxima": 89,
+  "n_maxima": 398,
+  "flatness": 0.026892610251543114
+ },
+ "pjx_default_e96": {
+  "name": "pjx_default_e96",
+  "xmin": -1.3909231469739654,
+  "xmax": 0.8500216085289722,
+  "f_peak": 798.0,
+  "n_distinct_maxima": 93,
+  "n_maxima": 399,
+  "flatness": 0.027348885156575648
+ }
+}

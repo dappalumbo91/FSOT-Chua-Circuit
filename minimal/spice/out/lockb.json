@@ -1,0 +1,29 @@
+{
+ "b5_attr": {
+  "name": "b5_attr",
+  "xmin": 7.47738579,
+  "xmax": 7.47738579,
+  "f_peak": 102.0,
+  "n_distinct_maxima": 0,
+  "n_maxima": 0,
+  "flatness": 0.127080254120763
+ },
+ "b6_default": {
+  "name": "b6_default",
+  "xmin": 7.47738579,
+  "xmax": 7.47738579,
+  "f_peak": 102.0,
+  "n_distinct_maxima": 0,
+  "n_maxima": 0,
+  "flatness": 0.127080254120763
+ },
+ "b5_attr_long": {
+  "name": "b5_attr_long",
+  "xmin": 7.47738579,
+  "xmax": 7.47738579,
+  "f_peak": 100.71428571428572,
+  "n_distinct_maxima": 0,
+  "n_maxima": 0,
+  "flatness": 0.12636634025467308
+ }
+}

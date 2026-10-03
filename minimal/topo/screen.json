@@ -1,0 +1,242 @@
+[
+ {
+  "id": "F1[B=1]",
+  "eq": "x'''+0.4280x''+1.0000x'=|x|-1",
+  "A_eff": 0.428,
+  "passes": false,
+  "parts": "4 op-amps, 1 diode, 9 R, 3 C (current board)",
+  "note": "canonical bands from results/bif_A.tsv (ideal) and the ngspice scan (real diode)"
+ },
+ {
+  "id": "F1[B=K]",
+  "eq": "x'''+0.4280x''+0.4201x'=|x|-1",
+  "A_eff": 0.6604,
+  "passes": false,
+  "parts": "4 op-amps, 1 diode, 9 R, 3 C (current board)",
+  "note": "canonical bands from results/bif_A.tsv (ideal) and the ngspice scan (real diode)"
+ },
+ {
+  "id": "F1[B=Theta]",
+  "eq": "x'''+0.4280x''+0.9175x'=|x|-1",
+  "A_eff": 0.4469,
+  "passes": false,
+  "parts": "4 op-amps, 1 diode, 9 R, 3 C (current board)",
+  "note": "canonical bands from results/bif_A.tsv (ideal) and the ngspice scan (real diode)"
+ },
+ {
+  "id": "F1[B=kappa]",
+  "eq": "x'''+0.4280x''+0.3146x'=|x|-1",
+  "A_eff": 0.7631,
+  "passes": false,
+  "parts": "4 op-amps, 1 diode, 9 R, 3 C (current board)",
+  "note": "canonical bands from results/bif_A.tsv (ideal) and the ngspice scan (real diode)"
+ },
+ {
+  "id": "F1[B=kappa/gamma_rel]",
+  "eq": "x'''+0.4280x''+0.7350x'=|x|-1",
+  "A_eff": 0.4993,
+  "passes": false,
+  "parts": "4 op-amps, 1 diode, 9 R, 3 C (current board)",
+  "note": "canonical bands from results/bif_A.tsv (ideal) and the ngspice scan (real diode)"
+ },
+ {
+  "id": "F1[B=gamma_rel]",
+  "eq": "x'''+0.4280x''+0.4280x'=|x|-1",
+  "A_eff": 0.6543,
+  "passes": false,
+  "parts": "4 op-amps, 1 diode, 9 R, 3 C (current board)",
+  "note": "canonical bands from results/bif_A.tsv (ideal) and the ngspice scan (real diode)"
+ },
+ {
+  "id": "F1[B=S_EM]",
+  "eq": "x'''+0.4280x''+0.9557x'=|x|-1",
+  "A_eff": 0.4378,
+  "passes": false,
+  "parts": "4 op-amps, 1 diode, 9 R, 3 C (current board)",
+  "note": "canonical bands from results/bif_A.tsv (ideal) and the ngspice scan (real diode)"
+ },
+ {
+  "id": "S-a",
+  "eq": "x'''+0.4280x''+0x'+1x=+sgn(x)",
+  "equilibria": [
+   1.0,
+   -1.0
+  ],
+  "eig": [
+   [
+    "(-1.1649+0j)",
+    "(0.3684+0.8501j)",
+    "(0.3684-0.8501j)"
+   ],
+   [
+    "(-1.1649+0j)",
+    "(0.3684+0.8501j)",
+    "(0.3684-0.8501j)"
+   ]
+  ],
+  "shilnikov_ratio": [
+   0.3163,
+   0.3163
+  ],
+  "all_unstable": true,
+  "passes": true,
+  "parts": "4 op-amps, 0 diode, 5 R, 3 C",
+  "score": 12
+ },
+ {
+  "id": "S-b",
+  "eq": "x'''+0.4280x''+0x'+1x=-sgn(x)",
+  "equilibria": [],
+  "eig": [],
+  "shilnikov_ratio": [],
+  "all_unstable": false,
+  "passes": false,
+  "parts": "4 op-amps, 0 diode, 5 R, 3 C",
+  "score": 12
+ },
+ {
+  "id": "S-c",
+  "eq": "x'''+0.4280x''+1x'+1x=+sgn(x)",
+  "equilibria": [
+   1.0,
+   -1.0
+  ],
+  "eig": [
+   [
+    "(0.1773+1.1163j)",
+    "(0.1773-1.1163j)",
+    "(-0.7827+0j)"
+   ],
+   [
+    "(0.1773+1.1163j)",
+    "(0.1773-1.1163j)",
+    "(-0.7827+0j)"
+   ]
+  ],
+  "shilnikov_ratio": [
+   0.2266,
+   0.2266
+  ],
+  "all_unstable": true,
+  "passes": true,
+  "parts": "5 op-amps, 0 diode, 7 R, 3 C",
+  "score": 15
+ },
+ {
+  "id": "S-d",
+  "eq": "x'''+0.4280x''+1x'+1x=-sgn(x)",
+  "equilibria": [],
+  "eig": [],
+  "shilnikov_ratio": [],
+  "all_unstable": false,
+  "passes": false,
+  "parts": "5 op-amps, 0 diode, 7 R, 3 C",
+  "score": 15
+ },
+ {
+  "id": "S-e",
+  "eq": "x'''+0.4280x''+1x'+0x=+sgn(x)",
+  "equilibria": [],
+  "eig": [],
+  "shilnikov_ratio": [],
+  "all_unstable": false,
+  "passes": false,
+  "parts": "5 op-amps, 0 diode, 7 R, 3 C",
+  "score": 15
+ },
+ {
+  "id": "S-f",
+  "eq": "x'''+0.4280x''+0x'+0x=+sgn(x)",
+  "equilibria": [],
+  "eig": [],
+  "shilnikov_ratio": [],
+  "all_unstable": false,
+  "passes": false,
+  "parts": "4 op-amps, 0 diode, 5 R, 3 C",
+  "score": 12
+ },
+ {
+  "id": "A-a",
+  "eq": "x'''+0.4280x''+0x'+0x=+|x|-1",
+  "equilibria": [
+   1.0,
+   -1.0
+  ],
+  "eig": [
+   [
+    "(-0.6519+0.8467j)",
+    "(-0.6519-0.8467j)",
+    "(0.8758+0j)"
+   ],
+   [
+    "(-1.1649+0j)",
+    "(0.3684+0.8501j)",
+    "(0.3684-0.8501j)"
+   ]
+  ],
+  "shilnikov_ratio": [
+   0.7444,
+   0.3163
+  ],
+  "all_unstable": true,
+  "passes": true,
+  "parts": "4 op-amps, 1 diode, 7 R, 3 C",
+  "score": 15
+ },
+ {
+  "id": "A-b",
+  "eq": "x'''+0.4280x''+0x'+0x=-|x|+1",
+  "equilibria": [
+   1.0,
+   -1.0
+  ],
+  "eig": [
+   [
+    "(-1.1649+0j)",
+    "(0.3684+0.8501j)",
+    "(0.3684-0.8501j)"
+   ],
+   [
+    "(-0.6519+0.8467j)",
+    "(-0.6519-0.8467j)",
+    "(0.8758+0j)"
+   ]
+  ],
+  "shilnikov_ratio": [
+   0.3163,
+   0.7444
+  ],
+  "all_unstable": true,
+  "passes": true,
+  "parts": "4 op-amps, 1 diode, 7 R, 3 C",
+  "score": 15
+ },
+ {
+  "id": "A-c",
+  "eq": "x'''+0.4280x''+1x'+0x=-|x|+1",
+  "equilibria": [
+   1.0,
+   -1.0
+  ],
+  "eig": [
+   [
+    "(0.1773+1.1163j)",
+    "(0.1773-1.1163j)",
+    "(-0.7827+0j)"
+   ],
+   [
+    "(-0.5197+1.1685j)",
+    "(-0.5197-1.1685j)",
+    "(0.6114+0j)"
+   ]
+  ],
+  "shilnikov_ratio": [
+   0.2266,
+   0.85
+  ],
+  "all_unstable": true,
+  "passes": true,
+  "parts": "4 op-amps, 1 diode, 8 R, 3 C",
+  "score": 16
+ }
+]

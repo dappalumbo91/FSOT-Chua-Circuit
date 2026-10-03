@@ -1,0 +1,4 @@
+# h-sets on the section {x=0}, coordinates (y,z) = (x', x''): name cy cz Uy Uz Sy Sz   (set = c + u U + s S, |u|,|s| <= 1)
+# Na: centred on the numerically located fixed point of P, U along the unstable eigenvector (mu ~ -1.616), S along the stable one (mu ~ -0.012)
+Na 1.31503295 -0.86886264 0.08002006 0.01648273 0.02043207 -0.02196658
+cover Na Na 1 1000 40

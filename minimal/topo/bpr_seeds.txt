@@ -1,0 +1,17 @@
+# eps = 6.234e-07
+seed00(1.439,0.865,-0.744)	bounded=0	l1=nan	xmin=1000000000.0000	xmax=-1000000000.0000	f_per_tau=0.00000	f_Hz=0.0
+seed01(1.446,-0.528,-0.207)	bounded=0	l1=nan	xmin=1000000000.0000	xmax=-1000000000.0000	f_per_tau=0.00000	f_Hz=0.0
+seed02(-0.870,0.339,0.871)	bounded=0	l1=nan	xmin=1000000000.0000	xmax=-1000000000.0000	f_per_tau=0.00000	f_Hz=0.0
+seed03(0.868,-0.373,0.049)	bounded=0	l1=nan	xmin=1000000000.0000	xmax=-1000000000.0000	f_per_tau=0.00000	f_Hz=0.0
+seed04(-0.659,-0.541,0.069)	bounded=0	l1=nan	xmin=1000000000.0000	xmax=-1000000000.0000	f_per_tau=0.00000	f_Hz=0.0
+seed05(1.124,-0.086,-0.139)	bounded=0	l1=nan	xmin=1000000000.0000	xmax=-1000000000.0000	f_per_tau=0.00000	f_Hz=0.0
+seed06(1.219,0.557,0.432)	bounded=0	l1=nan	xmin=1000000000.0000	xmax=-1000000000.0000	f_per_tau=0.00000	f_Hz=0.0
+seed07(0.702,-0.814,0.036)	bounded=0	l1=nan	xmin=1000000000.0000	xmax=-1000000000.0000	f_per_tau=0.00000	f_Hz=0.0
+seed08(0.938,0.658,0.659)	bounded=0	l1=nan	xmin=1000000000.0000	xmax=-1000000000.0000	f_per_tau=0.00000	f_Hz=0.0
+seed09(-1.305,-0.882,0.341)	bounded=0	l1=nan	xmin=1000000000.0000	xmax=-1000000000.0000	f_per_tau=0.00000	f_Hz=0.0
+seed10(-0.092,0.343,-0.176)	bounded=1	l1=0.0148	xmin=-2.3391	xmax=1.4480	f_per_tau=0.14680	f_Hz=815.6
+seed11(-1.591,-0.421,-0.716)	bounded=0	l1=nan	xmin=1000000000.0000	xmax=-1000000000.0000	f_per_tau=0.00000	f_Hz=0.0
+seed12(0.629,-0.175,-0.932)	bounded=0	l1=nan	xmin=1000000000.0000	xmax=-1000000000.0000	f_per_tau=0.00000	f_Hz=0.0
+seed13(0.025,0.321,-0.403)	bounded=0	l1=nan	xmin=1000000000.0000	xmax=-1000000000.0000	f_per_tau=0.00000	f_Hz=0.0
+seed14(-0.649,-0.556,-0.853)	bounded=0	l1=nan	xmin=1000000000.0000	xmax=-1000000000.0000	f_per_tau=0.00000	f_Hz=0.0
+seed15(-0.562,-0.808,0.807)	bounded=0	l1=nan	xmin=1000000000.0000	xmax=-1000000000.0000	f_per_tau=0.00000	f_Hz=0.0
