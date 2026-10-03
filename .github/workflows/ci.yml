@@ -122,6 +122,11 @@ jobs:
         run: |
           g++ -std=c++20 -O3 -pthread -o mj src/mj.cpp
           g++ -std=c++20 -O3 -pthread -o oa src/oa.cpp
+          g++ -std=c++20 -O2 -o bd src/bd.cpp
+          g++ -std=c++20 -O2 -fopenmp -o proof/proof proof/proof.cpp
+      - name: "Interval proof replay (covering relation Na => Na at A = 1/phi)"
+        working-directory: minimal/proof
+        run: NSUB=256 ./proof check hsets.txt
       - name: "Replay locks and key facts (hashes, lambda1 > 0, sum = -A, J1 unbounded)"
         working-directory: minimal
         run: |

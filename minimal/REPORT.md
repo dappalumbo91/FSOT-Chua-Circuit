@@ -8,6 +8,8 @@ Engines: `src/mj.cpp` (ideal, Lyapunov spectrum, bifurcation, homoclinic search)
 | M1 | design, Branch J A = 1/φ (hypothesis), analytic eigen/Shilnikov/frequency predictions | 078343de14f49cf8116b9fb9c53ad7642bd6712e7d767903fb8733bd31df40d4 |
 | M2 | bench knob edge, TL07x effect, SPICE chaos | 5a794149f2af44a1ee3ee16b110cb72f26a5bd9c535b684d175b2b1366113481 |
 | J | side task: A derived from FSOT laws, independent of φ (J1 = k, J2 = γ) | 3683004b8c9d3a53325bc340d6d5eff0f37293ba245dcba0d4a960395617117f |
+| D1 | no-post-hoc pass: knob A = γ_rel (R_A = 4205 Ω), secondary A = \|S_med\| (2744 Ω); τ0 and U_eff as engineering scales; Branch D = Shockley 1N4148 model (see REPO_SURVEY.md) | 9a9bd4cb83db98e088ba7898ea3272cb5cf4886f5c4d2c709a652c1df0f02ad1 |
+| D2 | Branch D numbers from bd.cpp (edge at 27 °C not blind; blind edge shifts at 0 °C, 60 °C and ±12 V; knob points), locked before ngspice | 3fe1b39aa51f12a9695e51f8d3299c1d11acc582ac2e86e47d8f1a34efd3d55c |
 
 ## Scorecard
 | prediction | result | verdict |
@@ -23,19 +25,26 @@ Engines: `src/mj.cpp` (ideal, Lyapunov spectrum, bifurcation, homoclinic search)
 | M2 B1 edge R_A,c = 2.812 kΩ [2.64, 2.98] | ideal model 2.810 kΩ, but **ngspice with a real 1N4148: ≈ 3.07 kΩ** | **falsified** (real-diode knee) |
 | M2 B4 SPICE chaotic at R_A = φR = 2912.5 Ω | **period-2 limit cycle**; chaos only for R_A ≥ 3.08 kΩ | **falsified** |
 | J1 A = k = 0.0393; J2 A = γ = 0.1509 | both unbounded (no attractor); distance to the 0.6182 hairline −0.579 / −0.467 | **falsified** |
+| D-0 Branch D edge at 27 °C 3100 Ω (not blind) | ngspice 3080 Ω | consistent |
+| D-T0 / D-T60 / D-V12 blind edge shifts −50 / +40 / −40 Ω | ngspice −40 / +50 / −20 Ω | **confirmed** (all in band) |
+| K-1 FSOT knob R/γ_rel = 4205 Ω not chaotic (rail latch) | ngspice rail latch (x 3.97–7.48 V) | **confirmed: the FSOT knob gives no chaos** |
+| K′-1 \|S_med\| knob 2744 Ω periodic, 876 Hz | periodic, 872 Hz | confirmed (no chaos) |
+
 Notes:
 - There is a hair-thin periodic window at A = 0.6182 in the ideal model, 0.0002 above 1/φ.
 - LOCK M2's window list is approximate: the true periodic gaps are 0.549–0.563, 0.571–0.572 and 0.586–0.598. Those were facts, not predictions.
 
 ## Proof status (honest)
 - **Rigorous:** the eigen-structure and divergence are exact (closed-form polynomial roots); E− is a Shilnikov-type saddle-focus.
-- **Not reached:** a Shilnikov homoclinic, because none exists in the scanned range. A computer-assisted interval proof (covering relations or a topological horseshoe on a return map) is **not yet implemented**. This is the main open item.
+- **Not reached:** a Shilnikov homoclinic, because none exists in the scanned range. **Interval proof (proof/, C++20):** the covering relation N_a ⇒ N_a under the x = 0 return map is VERIFIED at A = 1/φ, so a periodic orbit provably exists. A two-symbol horseshoe (proof of chaos) is **not reached**. See proof/README.md. No chaos proof is possible at the FSOT knob γ_rel, because it has no bounded attractor.
 - **Numerical:** positive λ1 across 8 seeds (ideal and full op-amp models) and broadband spectra in ngspice at R_A = 3.16 kΩ (λ ≈ 310 /s from two-run divergence).
 
 ## The FSOT content, honestly
 - No FSOT law tested here derives A. 1/φ was a hypothesis: it is chaotic in the ideal PWL model, but not with a real diode.
 - The φ-independent derivations (J1, J2) fail. τ0 and U_eff are inherited from the FSOT Chua BOM, not derived.
-- The circuit is a valid minimal chaotic circuit, but at present it is a standard Sprott-class design, not an FSOT derivation. The bench value R_A = 3.16 kΩ is post-hoc (from ngspice).
+- The circuit is a valid minimal chaotic circuit, but at present it is a standard Sprott-class design, not an FSOT derivation.
+- **No-post-hoc pass (LOCK D1/D2):** the repo survey (REPO_SURVEY.md) finds no FSOT absolute time or voltage scales and no FSOT junction physics. The FSOT damping knob γ_rel predicts, correctly, *no chaos*. The chaotic band is a circuit-physics result: Branch D, with zero free parameters, confirmed three blind edge shifts.
+- The bench value 3.16 kΩ therefore remains an engineering setpoint inside that band. It is **not** an FSOT value; it was originally post-hoc from ngspice. See results/LOCK_D_score.md and png/lockD2_edge_shifts.png.
 
 ## Comparison with Chua's circuit (Kennedy two-op-amp realisation in this repo)
 | | Chua (repo node) | FSOT minimal jerk (this) | Muthuswamy–Chua (3-element) |

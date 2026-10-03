@@ -30,7 +30,7 @@ def build(RA):
     return "\n".join(L) + "\n"
 if __name__ == "__main__":
     out = {}
-    for name, RA in [("fsot_minimal_RA_phiR_2912", 2912.5), ("fsot_minimal_RA_3160_bench", 3160.0)]:
+    for name, RA in [("fsot_minimal_RA_phiR_2912", 2912.5), ("fsot_minimal_RA_3160_bench", 3160.0), ("fsot_minimal_RA_gammarel_4220_derived", 4220.0)]:
         t = build(RA); open(name + ".txt", "w").write(t); z = compressToEncodedURIComponent(t)
         out[name] = BASE + "?ctz=" + z; open(name + ".url", "w").write(out[name] + "\n")
     json.dump(out, open("urls.json", "w"), indent=1); print(json.dumps({k: len(v) for k, v in out.items()}))

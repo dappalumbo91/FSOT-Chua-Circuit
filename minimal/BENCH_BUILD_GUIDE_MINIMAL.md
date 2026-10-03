@@ -1,7 +1,8 @@
 # Bench build guide: FSOT minimal chaotic circuit (1 × TL074, 1 × 1N4148, 3 × 100 nF film, 9 resistors)
 Hole-by-hole placement: `build_checklist_minimal.md` and `png/breadboard_minimal.png`. Schematic: `png/schematic_minimal.png`.
 **Don't move to the next stage until the checkpoint passes.** Measure every resistor before inserting it.
-Use **R_A = 3.16 kΩ** (2.7 kΩ + 1 kΩ trimmer set to 3.16 kΩ). The locked FSOT value φ·R = 2.91 kΩ is a **period-2 limit cycle** with a real diode (ngspice). See the report.
+**R_A: read this before building (LOCK D1/D2, results/LOCK_D_score.md).** The FSOT-derived knob is A = γ_rel (the FSOT transport relaxation rate, fsot-law-circuit DESIGN.md:33), which gives **R_A = R/γ_rel = 4.205 kΩ (E96 4.22 kΩ)**. It was predicted blind, and confirmed in ngspice, to be **NOT chaotic**: the op-amps latch to the rail. No FSOT-derived value lands in chaos.
+To see chaos, set the 2.7 kΩ + 1 kΩ trimmer inside the **circuit-physics chaotic band**: Branch D (Shockley 1N4148, zero free parameters) gives 3.10–3.49 kΩ, and ngspice gives 3.08 to about 3.40 kΩ, with periodic windows near 3.12, 3.19 and 3.24 kΩ. **3.16 kΩ is an engineering setpoint inside that band. It is NOT an FSOT prediction, and it was originally chosen post-hoc from ngspice.** The edge moves about −40 Ω at 0 °C and +50 Ω at 60 °C (LOCK D2, confirmed). The M1 value φ·R = 2.91 kΩ is a period-2 cycle with a real diode.
 
 ## Parts and colour codes
 | part | value | 4-band (5 %) | 5-band (1 %) |
@@ -9,7 +10,7 @@ Use **R_A = 3.16 kΩ** (2.7 kΩ + 1 kΩ trimmer set to 3.16 kΩ). The locked FSO
 | R2, R3, R4, Rf, Rw, Rx | 1.8 kΩ | brown-grey-red | brown-grey-black-brown |
 | Rd | 900 Ω (two 1.8 kΩ in parallel, or 909 Ω E96 white-black-white-black-brown) | | |
 | Rc | 40.2 kΩ (E96: yellow-black-red-red-brown) or 39 kΩ (orange-white-orange) | | |
-| R_A | 2.7 kΩ red-violet-red + 1 kΩ trimmer | | |
+| R_A | 2.7 kΩ red-violet-red + 1 kΩ trimmer (chaos band 3.08–3.40 kΩ; FSOT test point R/γ_rel = 4.22 kΩ is E96 yellow-red-red-brown-brown, predicted rail latch) | | |
 | C1, C2, C3 | 100 nF film (code 104), matched within 2 % | | |
 | D1 | 1N4148: the black band is the cathode | | |
 | U1 | TL074 (or TL084) quad JFET op-amp; the notch is pin 1 side | | |

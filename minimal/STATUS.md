@@ -21,3 +21,13 @@
 - [x] PNGs: png/{lambda1_vs_A_cpp,spice_RA_scan,attractors_cpp_vs_spice,schematic_minimal,breadboard_minimal}.png; build_checklist_minimal.md (tools/layout.py). NEXT: BENCH guide, comparison, REPORT, repo+CI+PR
 - [x] BENCH_BUILD_GUIDE_MINIMAL.md
 - [x] REPORT.md (scorecard + comparison). NEXT: repo minimal/, CI job, branch, PR
+
+## Task 3 (directive: NO post-hoc values), started 08:27 ET
+- [x] REPO_SURVEY.md. Finds: γ_rel is FSOT's damping rate; τ0 and U are engineering scales (fsot-law-circuit precedent); no FSOT junction physics; FSOT chaos results are Feigenbaum and Hénon only
+- [x] LOCK D1 9a9bd4cb… (knob A = γ_rel, giving R_A = 4205 Ω; scales; Branch D = Shockley model)
+- [x] src/bd.cpp (Branch D engine). LOCK D2 3fe1b39a… (edge shifts at T0/T60/V12, K-1 rail latch, K′ at 2744 periodic)
+- [ ] ngspice scoring running (spice/run_lockd2.py, writing out/lockd2.jsonl)
+- [ ] interval proof (src/proof.cpp)
+- [x] ngspice scoring: D-T0/T60/V12 confirmed; K-1 rail latch confirmed (FSOT knob not chaotic); K′ periodic confirmed (results/LOCK_D_score.md, png/lockD2_edge_shifts.png)
+- [x] proof/: Na ⇒ Na VERIFIED at A = 1/φ (periodic orbit exists); horseshoe not reached
+- [x] guide, REPORT and Falstad (added the derived 4.22k link) updated. NEXT: CI step, tests, commit, push

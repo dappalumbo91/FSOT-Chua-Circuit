@@ -36,3 +36,5 @@ minimal/oa
 minimal/spice/models/vendor/
 minimal/spice/out/*.dat
 minimal/spice/out/*.log
+minimal/bd
+minimal/proof/proof

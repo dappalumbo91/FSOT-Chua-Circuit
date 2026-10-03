@@ -15,7 +15,7 @@ Rails: top outer **+9 V (red)**, top inner GND, bottom inner GND, bottom outer *
 | 9 | Jg12 | black wire | g12 | GT@11 | pin 12 IN4+ -> GND |
 | 10 | Jg10 | black wire | g14 | GT@15 | pin 10 IN3+ -> GND |
 | 11 | C1 | 100 nF | a10 | a11 | U1 integrator cap (o1-n1) |
-| 12 | RA | 3160 ohm | b10 | b11 | THE KNOB: 2.7k + 1k trimmer |
+| 12 | RA | 3160 ohm (engineering setpoint in the circuit-physics chaos band, not FSOT; FSOT knob R/γ_rel = 4.22k is non-chaotic) | b10 | b11 | THE KNOB: 2.7k + 1k trimmer |
 | 13 | Jn1 | yellow wire | c11 | a5 | extends node n1 to row 5 |
 | 14 | Rc | 40.2 k | b5 | +T@5 | constant: 9 V * 1.8k/40.2k = 0.403 V |
 | 15 | Rx | 1.8 k | c5 | j18 | x feedback (o3 -> n1), via o3 extension row 18 |
