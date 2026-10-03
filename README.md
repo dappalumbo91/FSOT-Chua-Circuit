@@ -79,6 +79,15 @@ Full report: [error_budget/ERROR_BUDGET.md](error_budget/ERROR_BUDGET.md). Bench
 
 ---
 
+## FSOT minimal chaotic circuit (draft, 2026-10-03)
+
+[minimal/REPORT.md](minimal/REPORT.md): a piecewise-linear jerk circuit built from 1 TL074, one 1N4148, 3 capacitors and 9 resistors.
+- **Holds:** chaos with the ideal diode at A = 1/φ (λ1 = 0.048/τ0); the TL07x op-amp effect is small (ΔA_c = +0.002).
+- **Falsified:** with a real diode in ngspice, R_A = φR gives a period-2 cycle, and chaos needs R_A ≥ 3.08 kΩ. The φ-independent derivations of A (J1, J2) also fail.
+- **Proof:** the computer-assisted interval proof is still open.
+
+Bench guide: [minimal/BENCH_BUILD_GUIDE_MINIMAL.md](minimal/BENCH_BUILD_GUIDE_MINIMAL.md).
+
 ## Pressure-point refinement (2026-10-03)
 
 Report: [refine/REFINE_REPORT.md](refine/REFINE_REPORT.md). Bench build guide with staged checkpoints: [build_visuals/BENCH_BUILD_GUIDE.md](build_visuals/BENCH_BUILD_GUIDE.md).

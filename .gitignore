@@ -31,3 +31,8 @@ spice/netlists/ring_*_seed*.cir
 refine/build/
 refine/build2/
 refine/results/peaks_*.tsv
+minimal/mj
+minimal/oa
+minimal/spice/models/vendor/
+minimal/spice/out/*.dat
+minimal/spice/out/*.log
