@@ -1,5 +1,7 @@
 # FSOT-Chua-Circuit
 
+[![CI](https://github.com/dappalumbo91/FSOT-Chua-Circuit/actions/workflows/ci.yml/badge.svg)](https://github.com/dappalumbo91/FSOT-Chua-Circuit/actions/workflows/ci.yml) [![License: Apache-2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
+
 A **coupled Chua circuit** — in the electronics literature, a nonlinear RLC oscillator with a piecewise-linear negative resistor (the “Chua diode”), tiled here as a **3-node ring**.
 
 This repository is a **physical application** of Fluid Spacetime Omni-Theory (FSOT). Analog voltages occupy three regions \((-1,\,0,\,+1)\). An ESP32 12-bit ADC is the observer. The prediction you can build this afternoon is a coupling resistance, not a fitted neural net.
